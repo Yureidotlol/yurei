@@ -8,6 +8,8 @@ and can be proven wrong by anyone.
 
 `research edition` · `draft 0.1` · `Robinhood Chain (4663)` · `settles in USDG`
 
+[**yurei.lol**](https://yurei.lol) · [**X @yureidotlol**](https://x.com/yureidotlol) · [Thesis](docs/THESIS.md) · [Architecture](docs/ARCHITECTURE.md)
+
 </div>
 
 ---

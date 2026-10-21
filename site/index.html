@@ -8,8 +8,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Yuji+Boku&family=Fragment+Mono&display=swap" rel="stylesheet">
-<meta property="og:title" content="Yurei">
-<meta property="og:description" content="A spirit, bound by contract. Accountable AI on Robinhood Chain.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07080B">
+<link rel="canonical" href="https://yurei.lol/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yurei.lol/">
+<meta property="og:site_name" content="Yurei">
+<meta property="og:title" content="Yurei · A spirit, bound by contract">
+<meta property="og:description" content="Accountable AI on Robinhood Chain. Every answer verifiable. Every lie provable in one step.">
+<meta property="og:image" content="https://yurei.lol/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="YUREI: a dot-matrix spirit behind a red talisman. A spirit, bound by contract.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Yurei · A spirit, bound by contract">
+<meta name="twitter:description" content="Accountable AI on Robinhood Chain. Every answer verifiable. Every lie provable in one step.">
+<meta name="twitter:image" content="https://yurei.lol/og.png">
 <style>
 /* Layout: a hanging scroll read top to bottom. A ritual opening, a night hero where the spirit stands behind its seal, then thesis, mechanism (with a live dispute game), the seal, specification, open questions and the register. */
 :root {
@@ -62,7 +78,8 @@ a { color: inherit; }
 
 /* ---------------- the opening ritual ---------------- */
 .ritual-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: var(--sumi); transition: opacity 1s ease, visibility 1s; }
-.ritual-wrap.gone { opacity: 0; visibility: hidden; }
+.ritual-wrap.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.ritual-wrap[hidden] { display: none !important; }
 .ritual-paper { position: relative; width: min(180px, 34vw); aspect-ratio: 1 / 3.1; transform: translateY(8px); animation: rp-in 1s cubic-bezier(.2,.7,.1,1) both;
   -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 56%); mask-image: linear-gradient(to bottom, #000 0 48%, transparent 56%);
   -webkit-mask-size: 100% 230%; mask-size: 100% 230%; -webkit-mask-position: 0 0; mask-position: 0 0; }
@@ -413,7 +430,7 @@ footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
         <p class="sub">Yurei is a research program for accountable AI on Robinhood Chain: a model that reasons off-chain, answers onchain, and can be proven wrong by anyone. What its answers may do is fixed by a seal it cannot amend.</p>
         <div class="ctas">
           <a class="btn btn-seal" href="#thesis">Read the thesis</a>
-          <a class="btn btn-ghost" id="xLink" href="https://x.com/" target="_blank" rel="noopener">Follow on X</a>
+          <a class="btn btn-ghost" id="xLink" href="https://x.com/yureidotlol" target="_blank" rel="noopener">Follow on X</a>
         </div>
       </div>
     </div>
@@ -588,7 +605,7 @@ footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
       <div class="seal" id="closingSeal" aria-hidden="true">封</div>
       <h2>The spirit can be anywhere. <em>It cannot cross the seal.</em></h2>
       <p>Follow the summoning as the contracts are written, tested and opened to challenge.</p>
-      <div class="ctas" style="justify-content:center"><a class="btn btn-seal" id="xLink3" href="https://x.com/" target="_blank" rel="noopener">Follow on X</a><a class="btn btn-ghost" href="#thesis">Read the thesis again</a></div>
+      <div class="ctas" style="justify-content:center"><a class="btn btn-seal" id="xLink3" href="https://x.com/yureidotlol" target="_blank" rel="noopener">Follow on X</a><a class="btn btn-ghost" href="#thesis">Read the thesis again</a></div>
     </div>
   </section>
 </main>
@@ -597,14 +614,14 @@ footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
   <div class="ghostkanji" aria-hidden="true">霊</div>
   <div class="wrap">
     <p class="warn"><b>Never trust an address</b> you did not read in this register.</p>
-    <nav aria-label="Links"><a class="label" href="#thesis">Thesis</a><a class="label" href="#mechanism">Mechanism</a><a class="label" href="#spec">Specification</a><a class="label" href="#register">Register</a><a class="label" id="xLink2" href="https://x.com/" target="_blank" rel="noopener">X</a></nav>
+    <nav aria-label="Links"><a class="label" href="#thesis">Thesis</a><a class="label" href="#mechanism">Mechanism</a><a class="label" href="#spec">Specification</a><a class="label" href="#register">Register</a><a class="label" id="xLink2" href="https://x.com/yureidotlol" target="_blank" rel="noopener">X</a><a class="label" href="https://github.com/Yureidotlol/yurei" target="_blank" rel="noopener">GitHub</a></nav>
   </div>
 </footer>
 
 <script>
 (() => {
   // ---- site settings: fill these in when they exist ----
-  const CONFIG = { x: "", ca: "" };
+  const CONFIG = { x: "https://x.com/yureidotlol", ca: "" };
   if (CONFIG.x) for (const id of ["xLink", "xLink2", "xLink3"]) document.getElementById(id).href = CONFIG.x;
   if (CONFIG.ca) {
     const t = document.getElementById("caText"), b = document.getElementById("caCopy");
@@ -893,27 +910,32 @@ footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
   let started = false;
   const start = () => {
     if (started) return; started = true;
-    build(innerWidth < 900 ? 6.4 : 5.2); layout();
     document.body.classList.add("go");
-    reduce ? frame(performance.now()) : go();
+    try { build(innerWidth < 900 ? 6.4 : 5.2); layout(); reduce ? frame(performance.now()) : go(); } catch (e) { console.warn("yurei: hero", e); }
   };
+  const timers = [];
   const endRitual = (assemble) => {
+    timers.forEach(clearTimeout);
     document.body.classList.remove("ritual"); ritual.classList.add("gone");
     setTimeout(() => { ritual.hidden = true; }, 1100);
     store.set("yurei.ritual", "1");
-    start(); if (assemble) gather();
     ofuda.classList.add("on");
+    start(); if (assemble && pts) try { gather(); } catch (e) {}
   };
   const ready = (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve());
   if (!reduce && !store.get("yurei.ritual")) {
     ritual.hidden = false; document.body.classList.add("ritual");
     let done = false; const finish = (assemble) => { if (done) return; done = true; endRitual(assemble); };
-    document.getElementById("ritualSkip").onclick = () => finish(true);
-    addEventListener("keydown", (e) => { if (e.key === "Escape") finish(true); }, { once: true });
+    const skip = document.getElementById("ritualSkip");
+    skip.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); finish(true); });
+    skip.addEventListener("touchend", (e) => { e.preventDefault(); finish(true); }, { passive: false });
+    addEventListener("keydown", (e) => { if (e.key === "Escape") finish(true); });
     ready.then(() => {
-      setTimeout(() => { paper.classList.add("burn"); edge.classList.add("go"); }, 2700);
-      setTimeout(() => finish(true), 3900);
+      if (done) return;
+      timers.push(setTimeout(() => { paper.classList.add("burn"); edge.classList.add("go"); }, 2700));
+      timers.push(setTimeout(() => finish(true), 3900));
     });
+    setTimeout(() => finish(true), 7000); // never hang on the ritual, even if fonts stall
   } else {
     ready.then(() => { start(); ofuda.classList.add("on"); });
   }
