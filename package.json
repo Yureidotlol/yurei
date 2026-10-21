@@ -1,0 +1,23 @@
+{
+  "name": "yurei",
+  "version": "0.1.0",
+  "description": "Yurei: accountable AI on Robinhood Chain. Optimistic inference with an interactive one-step dispute game and an immutable policy seal.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "ref:run": "node reference/cli.js run",
+    "ref:dispute": "node reference/cli.js dispute",
+    "bench": "node scripts/bench-bisection.js",
+    "gas": "hardhat run scripts/measure-gas.js",
+    "results": "npm run bench && npm run gas"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.1.0",
+    "chai": "^4.5.0",
+    "ethers": "^6.13.4",
+    "hardhat": "^2.22.17"
+  }
+}
