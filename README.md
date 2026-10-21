@@ -43,13 +43,14 @@ answer is allowed to *do*, however persuasive the answer is.
 | The seal (immutable policy contract) | **Working, tested** | [`contracts/Seal.sol`](contracts/Seal.sol) |
 | First spirit: `toy-0`, an 8→4→2 fixed-point MLP | **Committed** | [`models/toy-0.json`](models/toy-0.json) |
 | Test suite | **21 / 21 passing** | [`results/TEST-RESULTS.md`](results/TEST-RESULTS.md) |
-| Robinhood Chain testnet deployment | Not yet | [Roadmap](docs/ROADMAP.md) |
+| Demo run on Robinhood Chain mainnet | **Done**: a lie caught and slashed, 89 s, ≈ $0.32 total | [`results/MAINNET-RUN.md`](results/MAINNET-RUN.md) |
 | A real language model compiled to the VM | Research | [Open questions](docs/OPEN-QUESTIONS.md) |
 | Independent security audit | Not yet | [Security](SECURITY.md) |
 | $YUREI token | Not launched | The only official address will be in the site's register |
 
-Nothing in this repository has been deployed to mainnet. Every number below was measured
-on a local chain and says so.
+The full protocol has run once on **Robinhood Chain mainnet** with demo parameters (1 USDG bonds):
+every transaction is in [`results/MAINNET-RUN.md`](results/MAINNET-RUN.md). Other numbers below were
+measured on a local chain and say so.
 
 ## Choose your route
 
@@ -126,7 +127,7 @@ site/                    the landing page
 
 ## Scope and licensing
 
-Yurei is a research prototype. The contracts are **unaudited** and have **not been deployed**.
+Yurei is a research prototype. The contracts are **unaudited**. They have run once on mainnet as a demo with tiny amounts.
 `toy-0` uses random weights: it exists to exercise the protocol, not to give good answers. Do
 not put real funds behind any of this. See [SECURITY.md](SECURITY.md).
 

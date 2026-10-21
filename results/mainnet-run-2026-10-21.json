@@ -1,0 +1,283 @@
+{
+  "generated": "2026-10-21T12:00:54.709Z",
+  "network": "Robinhood Chain",
+  "chainId": 4663,
+  "explorer": "https://robinhoodchain.blockscout.com",
+  "contracts": {
+    "usdg": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "game": "0x1Cf161D2b48DB3351335B1dDdE51253eD147D28D",
+    "oracle": "0x11DF365C8eed9325862A8ef35085BfDA4c610954",
+    "seal": "0x0509cC279Aee846DA60d73dF6C623ae3a106B30e"
+  },
+  "meta": {
+    "model": "toy-0",
+    "programRoot": "0x73bb3c277d15a9e87788e495ca4377edd677163cd7be115f2738cc4f85b9b369",
+    "numSteps": 50,
+    "bond": "1 USDG",
+    "fee": "0.5 USDG",
+    "window": "300 s",
+    "lie": 25,
+    "totalGas": 5697944
+  },
+  "roles": {
+    "you": "0x23BeD39cCcd522bbcc9A0c4E658D5027F967BeD1",
+    "operator": "0xFeAE04143340036D9c3037D5d63868152Ca2fECA",
+    "execA": "0x203E25E69Ec90D8Fb1b861363848ccf38d77711B",
+    "watcher": "0x0b68BE1a6f77673D5DC067d872652CBBe2c98B4E",
+    "execB": "0x2EEF886efc74963B34038CFf008743ef4817b66b"
+  },
+  "log": [
+    {
+      "stage": "00 setup",
+      "label": "deploy DisputeGame",
+      "who": "operator",
+      "hash": "0x5bc35ed9b263c80d33b6a30b03219cf343e159e8867da5fffdc1e7029d10531d",
+      "block": 94258758,
+      "gas": 1206043,
+      "address": "0x1Cf161D2b48DB3351335B1dDdE51253eD147D28D"
+    },
+    {
+      "stage": "00 setup",
+      "label": "deploy YureiOracle",
+      "who": "operator",
+      "hash": "0xc0dd7f9d025bb8e937abdaa2d26b38585f7c4d891022be9c705fcc37f5977236",
+      "block": 94258828,
+      "gas": 1632842,
+      "address": "0x11DF365C8eed9325862A8ef35085BfDA4c610954"
+    },
+    {
+      "stage": "00 setup",
+      "label": "register model toy-0",
+      "who": "operator",
+      "hash": "0x555c0765992bf91e899b6cc4387d18526f9525283d0709f877cd3047ea6a7fd2",
+      "block": 94258898,
+      "time": 1792583272,
+      "gas": 70430,
+      "programRoot": "0x73bb3c277d15a9e87788e495ca4377edd677163cd7be115f2738cc4f85b9b369"
+    },
+    {
+      "stage": "00 setup",
+      "label": "deploy Seal",
+      "who": "operator",
+      "hash": "0xf0186184bcfae6662dd6f92264a0297e59ffbaedb2fd1673572a94173d72c8dc",
+      "block": 94258941,
+      "gas": 606081,
+      "address": "0x0509cC279Aee846DA60d73dF6C623ae3a106B30e",
+      "note": "beneficiary and only recipient: your wallet"
+    },
+    {
+      "stage": "01 request",
+      "label": "request · seal check passed",
+      "who": "requester",
+      "hash": "0x3f17c54cfc6c814ff498f7b65f87f1b06e800e52debf115ef47ea4a0f4bbe11f",
+      "block": 94259260,
+      "time": 1792583310,
+      "gas": 308650,
+      "note": "fee 0.5 USDG · action: pay 1 USDG"
+    },
+    {
+      "stage": "02 answer",
+      "label": "answer · APPROVE",
+      "who": "executor A",
+      "hash": "0x03b3b714182d9bdc16bc992c38cb95f9e334c403ad2c405fb26a2ff77686f0f6",
+      "block": 94259290,
+      "time": 1792583313,
+      "gas": 158960,
+      "traceRoot": "0xa072c6728f40e7b406edfaf615034ff7f71f1e46b59a74704f644aa013c82e4a",
+      "note": "bond 1 USDG"
+    },
+    {
+      "stage": "05 action",
+      "label": "finalize · seal acted",
+      "who": "anyone",
+      "hash": "0x43a86ff41619ccb85eb396479584d7ae2a3bccfc3c85374ff4439f3ea8f222a7",
+      "block": 94262142,
+      "time": 1792583618,
+      "gas": 159315,
+      "note": "1 USDG paid to you inside the seal's limits"
+    },
+    {
+      "stage": "01 request",
+      "label": "request",
+      "who": "requester",
+      "hash": "0x934ba27e5856ac39b2701a407c38508b161d72d733dcdb9582aa8013a6263217",
+      "block": 94262216,
+      "time": 1792583625,
+      "gas": 214942,
+      "note": "fee 0.5 USDG"
+    },
+    {
+      "stage": "02 answer",
+      "label": "answer · APPROVE",
+      "who": "executor A",
+      "hash": "0xe2a51bd374b626e0166d86ae542f0aa4cd36a923576bdaa4701dbe54e50f95c1",
+      "block": 94262290,
+      "time": 1792583633,
+      "gas": 163748,
+      "traceRoot": "0x510adae2c889fbd68fd0c7046e0f8ac703318146f2e2b408af5480101e5433fb",
+      "lie": 25,
+      "note": "bond 1 USDG"
+    },
+    {
+      "stage": "03 challenge",
+      "label": "challenge · final state differs",
+      "who": "watcher",
+      "hash": "0x1ee8961a5c27e0622215ca22c85b404c5313b4b431b885ee139b872a006e746a",
+      "block": 94262321,
+      "time": 1792583636,
+      "gas": 331893,
+      "note": "bond 1 USDG · dispute game opened"
+    },
+    {
+      "stage": "04 proof",
+      "label": "bisect · reveal step 25",
+      "who": "executor A",
+      "hash": "0x4d8323549039e5560fc4fba6b9d375a8ffa9f86def931df990295fda6279018a",
+      "block": 94262419,
+      "time": 1792583649,
+      "gas": 84660,
+      "lo": 0,
+      "hi": 50,
+      "mid": 25
+    },
+    {
+      "stage": "04 proof",
+      "label": "respond · agree",
+      "who": "watcher",
+      "hash": "0x5651b22c34afc2673b312876f26157c407294d35cc00833cce093065dabbbf36",
+      "block": 94262498,
+      "time": 1792583657,
+      "gas": 41771,
+      "agree": true,
+      "mid": 25
+    },
+    {
+      "stage": "04 proof",
+      "label": "bisect · reveal step 37",
+      "who": "executor A",
+      "hash": "0xb0072d24536c458840d2f56ea3628f809292f6c160e1f49146f2a442406d05eb",
+      "block": 94262591,
+      "time": 1792583665,
+      "gas": 50472,
+      "lo": 25,
+      "hi": 50,
+      "mid": 37
+    },
+    {
+      "stage": "04 proof",
+      "label": "respond · differ",
+      "who": "watcher",
+      "hash": "0xc59d4f9f319ec0bf371623fe2bf50a37ae42655f7b461027e7c8a9fda5a165e7",
+      "block": 94262680,
+      "time": 1792583676,
+      "gas": 41771,
+      "agree": false,
+      "mid": 37
+    },
+    {
+      "stage": "04 proof",
+      "label": "bisect · reveal step 31",
+      "who": "executor A",
+      "hash": "0x0922cd9641c438492854caf9a855838520dba1a19252fd6821236f70befc6120",
+      "block": 94262762,
+      "time": 1792583684,
+      "gas": 50454,
+      "lo": 25,
+      "hi": 37,
+      "mid": 31
+    },
+    {
+      "stage": "04 proof",
+      "label": "respond · differ",
+      "who": "watcher",
+      "hash": "0xb4ab83178948ef557159c508f400873993dea2234392db198e09c4e1bdc196b9",
+      "block": 94262841,
+      "time": 1792583692,
+      "gas": 41771,
+      "agree": false,
+      "mid": 31
+    },
+    {
+      "stage": "04 proof",
+      "label": "bisect · reveal step 28",
+      "who": "executor A",
+      "hash": "0x8fa2382d97b6e53174aadd40635e3fa13425704f8240cad0056cd5a156e52a8a",
+      "block": 94262901,
+      "time": 1792583698,
+      "gas": 50472,
+      "lo": 25,
+      "hi": 31,
+      "mid": 28
+    },
+    {
+      "stage": "04 proof",
+      "label": "respond · differ",
+      "who": "watcher",
+      "hash": "0x177f03bbad1cb41c43d188d4e7d4f06d2437b94aa3a505bed6fdbfdd1f890dc0",
+      "block": 94262990,
+      "time": 1792583707,
+      "gas": 41771,
+      "agree": false,
+      "mid": 28
+    },
+    {
+      "stage": "04 proof",
+      "label": "bisect · reveal step 26",
+      "who": "executor A",
+      "hash": "0x71034063a07dff6cd868ed532d61fd562f92ae6386d9e3f8f383e81a7ecdb628",
+      "block": 94263067,
+      "time": 1792583715,
+      "gas": 50460,
+      "lo": 25,
+      "hi": 28,
+      "mid": 26
+    },
+    {
+      "stage": "04 proof",
+      "label": "respond · differ",
+      "who": "watcher",
+      "hash": "0xccd264bc318c90dfac9a6fa7fd8fe80c7a97dbb9fd6d4c702025d4f039d1e117",
+      "block": 94263100,
+      "time": 1792583718,
+      "gas": 41759,
+      "agree": false,
+      "mid": 26
+    },
+    {
+      "stage": "04 proof",
+      "label": "one step · execute step 25",
+      "who": "watcher",
+      "hash": "0xda1ecd3072a9a1fd1274f2f497490326520109cd984323d21a42260e8673c67b",
+      "block": 94263139,
+      "time": 1792583722,
+      "gas": 128777,
+      "step": 25,
+      "op": "MULADDI",
+      "dst": 10,
+      "computed": "0xa8643ffd98ca265b9147f984b0e7f00f7310b5ec300130d4d60e8df9abafb593",
+      "claimed": "0x489c9e1788499721b74c1d3a108c6800b877476919b4ca2b0224de7d91dac45d",
+      "settled": "executor A slashed · 2 USDG to watcher · question reopened"
+    },
+    {
+      "stage": "02 answer",
+      "label": "answer · APPROVE",
+      "who": "executor B",
+      "hash": "0xa720f82eee42bb46da0c3455ca7c4b1454bb0c99fb8e55112ed06edae1323832",
+      "block": 94263251,
+      "time": 1792583734,
+      "gas": 141860,
+      "traceRoot": "0xa072c6728f40e7b406edfaf615034ff7f71f1e46b59a74704f644aa013c82e4a",
+      "note": "bond 1 USDG"
+    },
+    {
+      "stage": "05 action",
+      "label": "finalize",
+      "who": "anyone",
+      "hash": "0x4a3733d374b89c2a2b52710f7d4e662bc3af676af699d6a47f1cc078060aad04",
+      "block": 94266251,
+      "time": 1792584041,
+      "gas": 79042,
+      "note": "executor B paid fee + bond"
+    }
+  ]
+}

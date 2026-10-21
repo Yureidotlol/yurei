@@ -11,6 +11,7 @@ Each stage is done when its evidence is in `results/`, not when it is announced.
 - toy-0, 21 passing tests, measured gas and bisection benchmark
 
 ## Stage 1 · Testnet
+- ✓ Done early: one full demo run on Robinhood Chain mainnet, receipts in [`results/MAINNET-RUN.md`](../results/MAINNET-RUN.md)
 - Deploy to Robinhood Chain testnet (46630) and publish every address and receipt in `results/`
 - A public watcher anyone can run (`reference/` as a long-running service)
 - Price bonds against measured gas
