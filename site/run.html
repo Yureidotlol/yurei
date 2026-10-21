@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yurei · Run the protocol</title>
+<meta name="description" content="Deploy Yurei to Robinhood Chain and run the full protocol: an honest answer, a caught lie, and a reopened question.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07080B">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Yuji+Boku&family=Fragment+Mono&display=swap" rel="stylesheet">
+<style>
+:root { --sumi:#07080B; --ink:#0E1016; --line:#1E222C; --line2:#2A2E38; --washi:#EDE3CC; --mist:#B9B3A6; --ash:#8A8E9A; --shu:#C8322B; --shu2:#E0483F; --soul:#A9B8FF; --ok:#7FD1A0; --warn:#E5B567;
+  --fd:"Shippori Mincho B1",Georgia,serif; --fb:"Yuji Boku",serif; --fm:"Fragment Mono",ui-monospace,monospace; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--sumi); color: var(--washi); font: 400 16px/1.6 var(--fd); }
+a { color: var(--soul); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 80px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--washi); font: 600 18px/1 var(--fd); letter-spacing: .28em; }
+.brand i { width: 30px; height: 30px; border: 1.5px solid var(--shu); color: var(--shu); display: grid; place-items: center; font: 400 18px/1 var(--fb); font-style: normal; letter-spacing: 0; }
+.label, .mono { font: 400 12px/1.5 var(--fm); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
+.mono { text-transform: none; letter-spacing: .02em; font-size: 13px; color: var(--mist); }
+h1 { font: 600 clamp(30px, 5vw, 46px)/1.1 var(--fd); margin: 34px 0 10px; }
+h1 em, h2 em { font-style: normal; color: var(--shu); }
+h2 { font: 600 22px/1.2 var(--fd); margin: 0 0 6px; }
+p.lead { color: var(--mist); max-width: 700px; margin: 0 0 24px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--ink); border: 1px solid var(--line); padding: 18px; }
+.card + .card { margin-top: 14px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.kv { display: grid; grid-template-columns: 150px 1fr; gap: 4px 12px; font: 400 13px/1.55 var(--fm); color: var(--mist); }
+.kv b { font-weight: 400; color: var(--ash); }
+.kv span { overflow-wrap: anywhere; }
+@media (max-width: 520px) { .kv { grid-template-columns: 1fr; } .kv b { margin-top: 6px; } }
+button { font: 400 12px/1 var(--fm); letter-spacing: .14em; text-transform: uppercase; padding: 13px 16px; border: 1px solid var(--line2); background: transparent; color: var(--washi); cursor: pointer; }
+button.seal { background: var(--shu); border-color: var(--shu); }
+button.seal:hover { background: var(--shu2); }
+button:hover { border-color: var(--ash); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ash); display: inline-block; }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--shu); } .dot.run { background: var(--soul); animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); align-items: start; font-size: 15px; }
+.steps li:last-child { border-bottom: 0; }
+.steps li .st { font: 400 13px/1.6 var(--fm); color: var(--ash); }
+.steps li.done .st { color: var(--ok); } .steps li.now .st { color: var(--soul); } .steps li.err .st { color: var(--shu); }
+.steps li small { display: block; font: 400 12px/1.5 var(--fm); color: var(--ash); overflow-wrap: anywhere; }
+.steps li a { font: 400 12px/1.6 var(--fm); white-space: nowrap; }
+.stage { font: 400 11px/1.6 var(--fm); letter-spacing: .14em; color: var(--shu); text-transform: uppercase; padding: 14px 0 2px; }
+.warn { border-left: 2px solid var(--warn); padding: 10px 14px; background: rgba(229,181,103,.06); color: var(--mist); font-size: 14px; }
+.err { border-left: 2px solid var(--shu); padding: 10px 14px; background: rgba(200,50,43,.08); color: var(--washi); font: 400 13px/1.5 var(--fm); overflow-wrap: anywhere; display: none; }
+label.check { display: flex; gap: 10px; align-items: flex-start; color: var(--mist); font-size: 14px; cursor: pointer; }
+label.check input { margin-top: 4px; accent-color: var(--shu); }
+table.bal { width: 100%; border-collapse: collapse; font: 400 13px/1.5 var(--fm); color: var(--mist); }
+table.bal td, table.bal th { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; }
+table.bal th { color: var(--ash); font-weight: 400; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; }
+table.bal td.n { text-align: right; white-space: nowrap; }
+.big { font: 600 20px/1.3 var(--fd); }
+.timer { font: 400 13px/1 var(--fm); color: var(--soul); }
+footer { margin-top: 40px; color: var(--ash); font: 400 12px/1.6 var(--fm); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/"><i>霊</i>YUREI</a>
+    <div class="row"><span class="dot" id="netDot"></span><span class="label" id="netText">Not connected</span></div>
+  </header>
+
+  <h1>Run the protocol on <em>Robinhood Chain.</em></h1>
+  <p class="lead">This page deploys Yurei and plays one full story with real transactions: an honest answer that a seal acts on, an executor that lies and is caught in a few rounds, and a second executor that answers the reopened question. Every step links to the explorer.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">01 · Your wallet</div>
+      <p class="mono" style="margin:8px 0 14px">Your wallet only funds the run and receives everything back. It signs two transfers; it is never asked to approve a contract.</p>
+      <div class="row"><button class="seal" id="btnConnect">Connect wallet</button><span class="mono" id="meText"></span></div>
+    </div>
+    <div class="card">
+      <div class="label">Demo parameters</div>
+      <div class="kv" style="margin-top:10px" id="params"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="label">02 · Role wallets</div>
+    <p class="mono" style="margin:8px 0 12px">The protocol needs separate parties: a requester, two executors and a watcher. This page creates four throwaway wallets for them in your browser. Their keys stay on this device. Download the backup before funding, so nothing is lost if you close the tab.</p>
+    <table class="bal" id="balTable"><thead><tr><th>Role</th><th>Address</th><th style="text-align:right">ETH</th><th style="text-align:right">USDG</th></tr></thead><tbody></tbody></table>
+    <div class="row" style="margin-top:12px"><button id="btnBackup">Download key backup</button><button id="btnRefresh">Refresh balances</button></div>
+  </div>
+
+  <div class="card">
+    <div class="label">03 · Fund and run</div>
+    <div class="warn" style="margin:10px 0 14px">These contracts are a research prototype and have not been audited. The amounts are kept tiny on purpose. Yurei is open, so anyone may answer or challenge: if a stranger catches the planted lie before our watcher does, they keep the liar's 1 USDG bond. That is the protocol working.</div>
+    <label class="check"><input type="checkbox" id="ack"> I understand: research prototype, real but tiny amounts, and anyone may take part.</label>
+    <div class="row" style="margin-top:14px"><button class="seal" id="btnRun" disabled>Fund and run</button><span class="timer" id="timer"></span></div>
+    <div class="err" id="errBox" style="margin-top:12px"></div>
+    <div id="stepList" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card" id="finishCard" style="display:none">
+    <div class="label">04 · Finish</div>
+    <p class="mono" style="margin:8px 0 12px">Return everything to your wallet. The seal's unspent USDG can be reclaimed once the seal expires; it always goes to your wallet, and anyone may trigger it.</p>
+    <div class="row"><button class="seal" id="btnSweep">Return funds to my wallet</button><button id="btnReclaim">Reclaim seal</button><button id="btnExport">Download run log</button></div>
+    <p class="mono" id="sealInfo" style="margin:12px 0 0"></p>
+  </div>
+
+  <footer>Every transaction on this page is real and public. Contract sources: <a href="https://github.com/Yureidotlol/yurei" target="_blank" rel="noopener">github.com/Yureidotlol/yurei</a></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<script src="yurei-artifacts.js"></script>
+<script src="yurei-ref.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const A = window.YUREI_ARTIFACTS, R = window.YUREI_REF;
+  const LOCAL = new URLSearchParams(location.search).has("local");
+  const NETS = {
+    4663: { name: "Robinhood Chain", rpc: "https://rpc.mainnet.chain.robinhood.com", explorer: "https://robinhoodchain.blockscout.com", usdg: "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168" },
+    31337: { name: "Local test chain", rpc: "http://127.0.0.1:8545", explorer: "", usdg: null, local: true },
+  };
+  const WANT = LOCAL ? 31337 : 4663;
+  const U = (n) => ethers.parseUnits(String(n), 6);
+  const P = {
+    bond: U(1), fee: U("0.5"), action: U(1), perAction: U(1), perDay: U(2), sealFund: U(2),
+    window: LOCAL ? 4 : 300, move: LOCAL ? 30 : 900, answerTimeout: LOCAL ? 60 : 3600, sealLife: LOCAL ? 40 : 7200,
+    eth: LOCAL ? { operator: "0.08", execA: "0.04", watcher: "0.04", execB: "0.04" } : { operator: "0.0008", execA: "0.0004", watcher: "0.0004", execB: "0.0004" },
+    usdg: { operator: U(3), execA: U(1), watcher: U(1), execB: U(1) },
+  };
+  const ROLES = [["operator", "Requester / deployer"], ["execA", "Executor A (lies once)"], ["watcher", "Watcher"], ["execB", "Executor B"]];
+  const ERC20 = ["function balanceOf(address) view returns (uint256)", "function transfer(address,uint256) returns (bool)", "function approve(address,uint256) returns (bool)", "function allowance(address,address) view returns (uint256)"];
+
+  // ---------- storage (per wallet, per chain)
+  const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+  let S = null, key = null, net = null, me = null, signer = null, read = null, running = false;
+  const save = () => key && store.set(key, S);
+
+  const ethSum = Object.values(P.eth).reduce((a, b) => a + Number(b), 0);
+  const usdgSum = Object.values(P.usdg).reduce((a, b) => a + b, 0n);
+  $("params").innerHTML = [
+    ["Bond", "1 USDG"], ["Request fee", "0.5 USDG"], ["Seal action", "pay you 1 USDG"], ["Seal limits", "1 per action · 2 per day · expires in " + (LOCAL ? "40 s" : "2 h")],
+    ["Challenge window", LOCAL ? "4 s" : "5 min"], ["You send", ethSum.toFixed(4) + " ETH + " + ethers.formatUnits(usdgSum, 6) + " USDG"], ["You get back", "all of it, minus gas"],
+  ].map(([k, v]) => `<b>${k}</b><span>${v}</span>`).join("");
+
+  // ---------- wallet
+  async function connect() {
+    if (!window.ethereum) return fail("No wallet found. Open this page in a browser with MetaMask, Rabby or another Ethereum wallet.");
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    if (!LOCAL) {
+      const hex = "0x" + WANT.toString(16);
+      try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] }); }
+      catch (e) {
+        if (e.code === 4902 || /Unrecognized|not added/i.test(e.message || "")) await window.ethereum.request({ method: "wallet_addEthereumChain", params: [{ chainId: hex, chainName: "Robinhood Chain", nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 }, rpcUrls: [NETS[WANT].rpc], blockExplorerUrls: [NETS[WANT].explorer] }] });
+        else throw e;
+      }
+    }
+    const bp = new ethers.BrowserProvider(window.ethereum);
+    signer = await bp.getSigner(); me = await signer.getAddress();
+    const cid = Number((await bp.getNetwork()).chainId);
+    if (cid !== WANT) return fail(`Your wallet is on chain ${cid}. Switch it to ${NETS[WANT].name} (${WANT}) and connect again.`);
+    net = NETS[WANT];
+    // reads + role wallets go through the public RPC; fall back to the wallet's own connection
+    read = new ethers.JsonRpcProvider(net.rpc, WANT, { staticNetwork: true, cacheTimeout: -1 });
+    try { await read.getBlockNumber(); } catch { read = bp; }
+    $("netDot").className = "dot ok"; $("netText").textContent = net.name;
+    $("meText").textContent = short(me);
+    key = `yurei.run.${WANT}.${me.toLowerCase()}`;
+    S = store.get(key) || { roles: {}, step: 0, log: [], c: {} };
+    for (const [r] of ROLES) if (!S.roles[r]) S.roles[r] = ethers.Wallet.createRandom().privateKey;
+    save(); renderSteps(); refresh(); gate();
+    if (S.step >= STEPS.length) $("finishCard").style.display = "";
+  }
+  const NM = {};
+  const W = (r) => (NM[r] ||= new ethers.NonceManager(new ethers.Wallet(S.roles[r], read)));
+  const addr = (r) => new ethers.Wallet(S.roles[r]).address;
+  const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+  const C = (name, at, r) => new ethers.Contract(at, A[name].abi, r ? W(r) : read);
+  const usdg = (r) => new ethers.Contract(S.c.usdg || net.usdg, ERC20, r ? W(r) : read);
+  const txLink = (h) => net.explorer ? `<a href="${net.explorer}/tx/${h}" target="_blank" rel="noopener">${h.slice(0, 10)}… ↗</a>` : `<span class="mono">${h.slice(0, 10)}…</span>`;
+
+  async function refresh() {
+    if (!S) return;
+    const tb = $("balTable").querySelector("tbody"); const rows = [];
+    const list = [["you", "Your wallet", me], ...ROLES.map(([r, n]) => [r, n, addr(r)])];
+    for (const [r, n, a] of list) {
+      let e = "…", u = "…";
+      try { e = Number(ethers.formatEther(await read.getBalance(a))).toFixed(6); } catch {}
+      try { if (S.c.usdg || net.usdg) u = ethers.formatUnits(await usdg().balanceOf(a), 6); } catch {}
+      rows.push(`<tr><td>${n}</td><td class="mono">${net.explorer ? `<a href="${net.explorer}/address/${a}" target="_blank" rel="noopener">${short(a)}</a>` : short(a)}</td><td class="n">${e}</td><td class="n">${u}</td></tr>`);
+    }
+    tb.innerHTML = rows.join("");
+  }
+
+  // ---------- run log
+  async function rec(stage, label, who, p, extra = {}) {
+    const tx = await p; const rc = await tx.wait();
+    const b = await read.getBlock(rc.blockNumber);
+    S.log.push({ stage, label, who, hash: rc.hash, block: rc.blockNumber, time: b ? b.timestamp : null, gas: Number(rc.gasUsed), ...extra });
+    save(); return rc;
+  }
+  const nowTs = async () => (await read.getBlock("latest")).timestamp;
+  async function waitUntil(ts, label) {
+    if (LOCAL) { const n = await nowTs(); if (n <= ts) { await read.send("evm_increaseTime", [ts - n + 1]); await read.send("evm_mine", []); } return; }
+    for (;;) {
+      const n = await nowTs(); const left = ts - n;
+      if (left < 0) { $("timer").textContent = ""; return; }
+      $("timer").textContent = `${label}: ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+  }
+  const parse = (c, rc, name) => rc.logs.map((l) => { try { return c.interface.parseLog(l); } catch { return null; } }).find((e) => e && e.name === name);
+
+  // ---------- the story
+  const input = R.findInput(1);
+  const lasting = R.lastingCorruptions(input);
+  const LIE = lasting.find((i) => i >= 25) ?? lasting[0];
+  const honestA = () => new R.Executor(R.program);
+  const STEPS = [
+    ["Setup", "Fund the role wallets from your wallet", "you", async () => {
+      if (LOCAL && !S.c.usdg) { // local test: a mock USDG
+        const f = new ethers.ContractFactory(A.MockUSDG.abi, A.MockUSDG.bytecode, signer);
+        const m = await f.deploy(); await m.waitForDeployment(); S.c.usdg = m.target; save();
+        await (await new ethers.Contract(m.target, A.MockUSDG.abi, signer).mint(me, U(100))).wait();
+      }
+      const tok = new ethers.Contract(S.c.usdg || net.usdg, ERC20, signer);
+      if ((await tok.balanceOf(me)) < usdgSum) throw new Error(`Your wallet needs ${ethers.formatUnits(usdgSum, 6)} USDG on ${net.name}.`);
+      // two signatures: ETH to the operator, USDG to the operator; it forwards the rest
+      if (!S.fundedEth) { const t = await signer.sendTransaction({ to: addr("operator"), value: ethers.parseEther(ethSum.toFixed(6)) }); await t.wait(); S.fundedEth = t.hash; save(); }
+      if (!S.fundedUsdg) { const t = await tok.transfer(addr("operator"), usdgSum); await t.wait(); S.fundedUsdg = t.hash; save(); }
+      for (const [r] of ROLES.slice(1)) {
+        if ((await read.getBalance(addr(r))) === 0n) await (await W("operator").sendTransaction({ to: addr(r), value: ethers.parseEther(P.eth[r]) })).wait();
+        if ((await usdg().balanceOf(addr(r))) < P.usdg[r]) await (await usdg("operator").transfer(addr(r), P.usdg[r])).wait();
+      }
+      return S.fundedUsdg;
+    }],
+    ["Setup", "Deploy the dispute game", "operator", async () => {
+      const f = new ethers.ContractFactory(A.DisputeGame.abi, A.DisputeGame.bytecode, W("operator"));
+      const c = await f.deploy(P.move); const rc = await c.deploymentTransaction().wait(); S.c.game = c.target;
+      S.log.push({ stage: "00 setup", label: "deploy DisputeGame", who: "operator", hash: rc.hash, block: rc.blockNumber, gas: Number(rc.gasUsed), address: c.target }); save(); return rc.hash;
+    }],
+    ["Setup", "Deploy the oracle (bond 1 USDG)", "operator", async () => {
+      const f = new ethers.ContractFactory(A.YureiOracle.abi, A.YureiOracle.bytecode, W("operator"));
+      const c = await f.deploy(S.c.usdg || net.usdg, S.c.game, P.bond, P.window, P.answerTimeout); const rc = await c.deploymentTransaction().wait(); S.c.oracle = c.target;
+      S.log.push({ stage: "00 setup", label: "deploy YureiOracle", who: "operator", hash: rc.hash, block: rc.blockNumber, gas: Number(rc.gasUsed), address: c.target }); save(); return rc.hash;
+    }],
+    ["Setup", "Register model toy-0", "operator", async () => {
+      const o = C("YureiOracle", S.c.oracle, "operator");
+      const rc = await rec("00 setup", "register model toy-0", "operator", o.registerModel(R.prog.programRoot, R.prog.numSteps), { programRoot: R.prog.programRoot });
+      S.modelId = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(["bytes32", "uint32"], [R.prog.programRoot, R.prog.numSteps])); save(); return rc.hash;
+    }],
+    ["Setup", "Deploy a seal that pays only you, and fund it with 2 USDG", "operator", async () => {
+      const exp = (await nowTs()) + P.sealLife;
+      const f = new ethers.ContractFactory(A.Seal.abi, A.Seal.bytecode, W("operator"));
+      const c = await f.deploy(S.c.usdg || net.usdg, S.c.oracle, me, P.perAction, P.perDay, exp, [me]); const rc = await c.deploymentTransaction().wait();
+      S.c.seal = c.target; S.sealExpires = exp;
+      S.log.push({ stage: "00 setup", label: "deploy Seal", who: "operator", hash: rc.hash, block: rc.blockNumber, gas: Number(rc.gasUsed), address: c.target, note: "beneficiary and only recipient: your wallet" }); save();
+      await (await usdg("operator").transfer(S.c.seal, P.sealFund)).wait(); return rc.hash;
+    }],
+    ["Setup", "Approve the oracle for fees and bonds", "all", async () => {
+      let h;
+      for (const [r] of ROLES) { const t = usdg(r); if ((await t.allowance(addr(r), S.c.oracle)) < U(10)) { const tx = await t.approve(S.c.oracle, U(10)); await tx.wait(); h = tx.hash; } }
+      return h;
+    }],
+    ["Story 1 · honest", "Request: should this be approved? If yes, the seal pays you 1 USDG", "operator", async () => {
+      const o = C("YureiOracle", S.c.oracle, "operator");
+      const rc = await rec("01 request", "request · seal check passed", "requester", o.request(S.modelId, input, P.fee, S.c.seal, me, P.action), { note: "fee 0.5 USDG · action: pay 1 USDG" });
+      S.req1 = parse(o, rc, "Requested").args.id.toString(); save(); return rc.hash;
+    }],
+    ["Story 1 · honest", "Executor A answers honestly, posting a commitment to all 51 states", "execA", async () => {
+      const a = honestA().execute(input); const o = C("YureiOracle", S.c.oracle, "execA");
+      const rc = await rec("02 answer", "answer · " + (a.output ? "APPROVE" : "REFUSE"), "executor A", o.answer(S.req1, a.traceRoot, a.finalState, a.startProof, a.endProof), { traceRoot: a.traceRoot, note: "bond 1 USDG" });
+      S.ans1 = rc.blockNumber; save(); return rc.hash;
+    }],
+    ["Story 1 · honest", "Nobody disputes. Wait out the challenge window", "—", async () => {
+      const r = await C("YureiOracle", S.c.oracle).requests(S.req1); await waitUntil(Number(r.answeredAt) + P.window, "challenge window"); return null;
+    }],
+    ["Story 1 · honest", "Finalize: executor A is paid, the seal pays you", "operator", async () => {
+      const o = C("YureiOracle", S.c.oracle, "operator");
+      const rc = await rec("05 action", "finalize · seal acted", "anyone", o.finalize(S.req1), { note: "1 USDG paid to you inside the seal's limits" });
+      return rc.hash;
+    }],
+    ["Story 2 · a lie", "Request the same question again, without a seal", "operator", async () => {
+      const o = C("YureiOracle", S.c.oracle, "operator");
+      const rc = await rec("01 request", "request", "requester", o.request(S.modelId, input, P.fee, ethers.ZeroAddress, ethers.ZeroAddress, 0), { note: "fee 0.5 USDG" });
+      S.req2 = parse(o, rc, "Requested").args.id.toString(); save(); return rc.hash;
+    }],
+    ["Story 2 · a lie", `Executor A answers with one corrupted step (step ${LIE})`, "execA", async () => {
+      const liar = new R.Executor(R.program, { corruptAt: LIE }); const a = liar.execute(input); const o = C("YureiOracle", S.c.oracle, "execA");
+      const rc = await rec("02 answer", "answer · " + (a.output ? "APPROVE" : "REFUSE"), "executor A", o.answer(S.req2, a.traceRoot, a.finalState, a.startProof, a.endProof), { traceRoot: a.traceRoot, lie: LIE, note: "bond 1 USDG" });
+      return rc.hash;
+    }],
+    ["Story 2 · a lie", "The watcher recomputes, sees a different final state, and challenges", "watcher", async () => {
+      const o = C("YureiOracle", S.c.oracle, "watcher");
+      const rc = await rec("03 challenge", "challenge · final state differs", "watcher", o.challenge(S.req2), { note: "bond 1 USDG · dispute game opened" });
+      S.game2 = parse(o, rc, "Challenged").args.gameId.toString(); save(); return rc.hash;
+    }],
+    ["Story 2 · a lie", "Bisection: narrow the disagreement to one step", "both", async () => {
+      const liar = new R.Executor(R.program, { corruptAt: LIE }); liar.execute(input);
+      const w = new R.Challenger(R.program); w.watch(input);
+      const g = C("DisputeGame", S.c.game); let last;
+      for (;;) {
+        const st = await g.games(S.game2), turn = Number(st.turn);
+        if (turn === 1) { const mid = Number((st.lo + st.hi) / 2n); const r = liar.reveal(mid);
+          last = await rec("04 proof", `bisect · reveal step ${mid}`, "executor A", C("DisputeGame", S.c.game, "execA").bisect(S.game2, r.hash, r.proof), { lo: Number(st.lo), hi: Number(st.hi), mid }); }
+        else if (turn === 2) { const agree = w.agrees(Number(st.mid), st.midHash);
+          last = await rec("04 proof", agree ? "respond · agree" : "respond · differ", "watcher", C("DisputeGame", S.c.game, "watcher").respond(S.game2, agree), { agree, mid: Number(st.mid) }); }
+        else break;
+        $("timer").textContent = `round ${S.log.filter((l) => /^bisect/.test(l.label)).length}`;
+      }
+      $("timer").textContent = ""; return last && last.hash;
+    }],
+    ["Story 2 · a lie", "One step: the chain executes the single disputed instruction. The liar is slashed", "watcher", async () => {
+      const g = C("DisputeGame", S.c.game, "watcher"); const st = await g.games(S.game2); const lo = Number(st.lo);
+      const w = new R.Challenger(R.program); w.watch(input); const ins = R.program[lo];
+      const rc = await rec("04 proof", `one step · execute step ${lo}`, "watcher", g.oneStep(S.game2, w.stateAt(lo), ins, R.prog.proof(lo)), { step: lo, op: R.vm.OP_NAME[ins.op], dst: ins.dst });
+      const ev = parse(C("DisputeGame", S.c.game), rc, "OneStepExecuted");
+      if (ev) Object.assign(S.log[S.log.length - 1], { computed: ev.args.computed, claimed: ev.args.claimed });
+      S.log[S.log.length - 1].settled = "executor A slashed · 2 USDG to watcher · question reopened"; save(); return rc.hash;
+    }],
+    ["Story 3 · reopened", "Executor B answers the reopened question honestly", "execB", async () => {
+      const a = honestA().execute(input); const o = C("YureiOracle", S.c.oracle, "execB");
+      const rc = await rec("02 answer", "answer · " + (a.output ? "APPROVE" : "REFUSE"), "executor B", o.answer(S.req2, a.traceRoot, a.finalState, a.startProof, a.endProof), { traceRoot: a.traceRoot, note: "bond 1 USDG" });
+      return rc.hash;
+    }],
+    ["Story 3 · reopened", "Wait out the challenge window", "—", async () => {
+      const r = await C("YureiOracle", S.c.oracle).requests(S.req2); await waitUntil(Number(r.answeredAt) + P.window, "challenge window"); return null;
+    }],
+    ["Story 3 · reopened", "Finalize: executor B is paid fee and bond", "operator", async () => {
+      const rc = await rec("05 action", "finalize", "anyone", C("YureiOracle", S.c.oracle, "operator").finalize(S.req2), { note: "executor B paid fee + bond" });
+      return rc.hash;
+    }],
+  ];
+
+  const WHO = { you: "your wallet", operator: "requester", execA: "executor A", execB: "executor B", watcher: "watcher", all: "all four role wallets", both: "executor A and the watcher" };
+  function renderSteps() {
+    let html = "", cur = "";
+    STEPS.forEach(([stage, label, who], i) => {
+      if (stage !== cur) { html += `<div class="stage">${stage}</div><ul class="steps">`; cur = stage; }
+      const done = i < S.step, now = i === S.step && running, err = i === S.step && S.lastError;
+      const h = S.hashes && S.hashes[i];
+      html += `<li class="${done ? "done" : now ? "now" : err ? "err" : ""}"><span class="st">${done ? "✓" : now ? "…" : err ? "!" : "·"}</span><span>${label}<small>${who === "—" ? "" : "by " + (WHO[who] || who)}</small></span>${h ? txLink(h) : "<span></span>"}</li>`;
+      if (!STEPS[i + 1] || STEPS[i + 1][0] !== stage) html += "</ul>";
+    });
+    $("stepList").innerHTML = html;
+  }
+  function errText(e) { const inner = e?.info?.error?.message || e?.error?.message; return String(e.shortMessage || e.message || e) + (inner && !String(e.shortMessage || e.message).includes(inner) ? " (" + inner + ")" : ""); }
+  function fail(m) { const b = $("errBox"); b.style.display = m ? "block" : "none"; b.textContent = m || ""; }
+  function gate() { $("btnRun").disabled = !S || running || !$("ack").checked || S.step >= STEPS.length; $("btnRun").textContent = S && S.step > 0 && S.step < STEPS.length ? "Resume run" : "Fund and run"; }
+
+  async function runAll() {
+    if (running) return; running = true; fail(""); gate(); S.hashes = S.hashes || {};
+    try {
+      while (S.step < STEPS.length) {
+        renderSteps();
+        const h = await STEPS[S.step][3]();
+        if (h) S.hashes[S.step] = h;
+        S.step++; S.lastError = null; save(); renderSteps(); refresh();
+      }
+      $("finishCard").style.display = ""; sealInfo();
+    } catch (e) {
+      for (const k in NM) delete NM[k];
+      S.lastError = errText(e); save();
+      fail("Stopped: " + S.lastError + "\nNothing is lost. Fix the cause (usually gas or balance) and press Resume run.");
+    } finally { running = false; renderSteps(); gate(); refresh(); }
+  }
+
+  async function sweep() {
+    fail(""); $("btnSweep").disabled = true;
+    try {
+      for (const [r] of ROLES) {
+        const bal = await usdg().balanceOf(addr(r));
+        if (bal > 0n) await (await usdg(r).transfer(me, bal)).wait();
+      }
+      for (const [r] of ROLES) {
+        const w = W(r), a = addr(r), bal = await read.getBalance(a); if (bal === 0n) continue;
+        const fd = await read.getFeeData(); const price = fd.maxFeePerGas || fd.gasPrice;
+        const gas = await read.estimateGas({ from: a, to: me, value: 1n });
+        const cost = gas * price * 2n; if (bal <= cost) continue;
+        await (await w.sendTransaction({ to: me, value: bal - cost, gasLimit: gas, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait();
+      }
+      S.swept = true; save(); refresh();
+    } catch (e) { for (const k in NM) delete NM[k]; fail("Return stopped: " + errText(e)); }
+    $("btnSweep").disabled = false;
+  }
+  async function reclaim() {
+    fail("");
+    try {
+      if ((await nowTs()) < S.sealExpires) { if (LOCAL) await waitUntil(S.sealExpires, "seal"); else return fail("The seal expires at " + new Date(S.sealExpires * 1000).toLocaleString() + ". Come back then; this page remembers everything."); }
+      // a role wallet pays the gas if it still can, otherwise your wallet does
+      let c; try { c = C("Seal", S.c.seal, "operator"); await c.reclaim.estimateGas(); } catch { c = new ethers.Contract(S.c.seal, A.Seal.abi, signer); }
+      const tx = await c.reclaim(); await tx.wait(); S.reclaimed = tx.hash; save(); refresh(); sealInfo();
+    } catch (e) { fail("Reclaim stopped: " + errText(e)); }
+  }
+  async function sealInfo() {
+    if (!S.c.seal) return; let b = "?"; try { b = ethers.formatUnits(await usdg().balanceOf(S.c.seal), 6); } catch {}
+    $("sealInfo").textContent = `Seal ${S.c.seal} holds ${b} USDG · expires ${new Date(S.sealExpires * 1000).toLocaleString()}${S.reclaimed ? " · reclaimed" : ""}`;
+  }
+  function exportLog() {
+    const gas = S.log.reduce((a, l) => a + (l.gas || 0), 0);
+    const out = { generated: new Date().toISOString(), network: net.name, chainId: WANT, explorer: net.explorer, contracts: { usdg: S.c.usdg || net.usdg, game: S.c.game, oracle: S.c.oracle, seal: S.c.seal },
+      meta: { model: "toy-0", programRoot: R.prog.programRoot, numSteps: R.prog.numSteps, bond: "1 USDG", fee: "0.5 USDG", window: P.window + " s", lie: LIE, totalGas: gas },
+      roles: Object.fromEntries([["you", me], ...ROLES.map(([r]) => [r, addr(r)])]), log: S.log };
+    download(`yurei-run-${WANT}.json`, JSON.stringify(out, null, 2));
+  }
+  function backup() {
+    download(`yurei-role-wallets-${WANT}.json`, JSON.stringify({ note: "Private keys of the Yurei demo role wallets. Anyone with this file controls them. Keep it private.", chainId: WANT, owner: me, wallets: Object.fromEntries(ROLES.map(([r]) => [r, { address: addr(r), privateKey: S.roles[r] }])) }, null, 2));
+    S.backedUp = true; save();
+  }
+  function download(name, text) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "application/json" })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+
+  $("btnConnect").onclick = () => connect().catch((e) => fail(errText(e)));
+  $("btnRefresh").onclick = refresh;
+  $("btnBackup").onclick = () => S && backup();
+  $("ack").onchange = gate;
+  $("btnRun").onclick = () => { if (!S.backedUp && !confirm("You haven't downloaded the key backup. Run anyway?")) return; runAll(); };
+  $("btnSweep").onclick = sweep; $("btnReclaim").onclick = reclaim; $("btnExport").onclick = exportLog;
+  if (window.ethereum) window.ethereum.on?.("accountsChanged", () => location.reload());
+})();
+</script>
+</body>
+</html>
