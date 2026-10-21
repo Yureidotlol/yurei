@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Yurei</title>
+<meta name="description" content="Yurei: accountable AI on Robinhood Chain. A model that answers onchain, can be proven wrong by anyone, and is bound by a seal it cannot amend.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Yuji+Boku&family=Fragment+Mono&display=swap" rel="stylesheet">
+<meta property="og:title" content="Yurei">
+<meta property="og:description" content="A spirit, bound by contract. Accountable AI on Robinhood Chain.">
+<style>
+/* Layout: a hanging scroll read top to bottom. A ritual opening, a night hero where the spirit stands behind its seal, then thesis, mechanism (with a live dispute game), the seal, specification, open questions and the register. */
+:root {
+  color-scheme: dark;
+  --sumi: #07080B;        /* ink-black night */
+  --sumi-2: #0D0F14;      /* raised night */
+  --sumi-3: #12151C;
+  --washi: #EDE3CC;       /* ofuda paper */
+  --washi-dim: #CDBF9F;
+  --shu: #C8322B;         /* vermilion seal ink */
+  --shu-hot: #E8443A;
+  --soul: #A9B8FF;        /* pale spirit light */
+  --ash: #8A8E9A;         /* quiet text */
+  --mist: #C9CDD8;        /* body text */
+  --line: #1B1E26;
+  --ember: #FF9A4A;
+  --ok: #8FD3A8;
+  --amber: #E9B46A;
+  --f-display: "Shippori Mincho B1", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --f-brush: "Yuji Boku", "Shippori Mincho B1", "Noto Serif JP", serif;
+  --f-mono: "Fragment Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--sumi); color: var(--mist);
+  font: 400 17px/1.75 var(--f-display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--sumi); }
+body.ritual { overflow: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--soul); outline-offset: 4px; border-radius: 4px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.label { font: 400 12px/1.4 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
+
+/* film grain over everything */
+.grain { position: fixed; inset: -50%; z-index: 55; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 1.2s steps(6) infinite; }
+@keyframes grain { 0% { transform: translate(0,0); } 20% { transform: translate(-3%,2%); } 40% { transform: translate(2%,-3%); } 60% { transform: translate(-2%,-1%); } 80% { transform: translate(3%,3%); } 100% { transform: translate(0,0); } }
+
+/* spirit-light cursor (fine pointers only) */
+.wisp { position: fixed; left: 0; top: 0; z-index: 58; pointer-events: none; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #DDE4FF; box-shadow: 0 0 14px 4px rgba(169,184,255,.55), 0 0 40px 10px rgba(169,184,255,.18); opacity: 0; transition: opacity .4s, transform .25s; }
+.wisp.on { opacity: 1; }
+.wisp.hot { transform: scale(2.2); background: #FFD9C9; box-shadow: 0 0 16px 6px rgba(232,68,58,.5), 0 0 50px 12px rgba(232,68,58,.2); }
+.wisp-tail { position: fixed; left: 0; top: 0; z-index: 57; pointer-events: none; border-radius: 50%; background: rgba(169,184,255,.5); opacity: 0; }
+.wisp-tail.on { opacity: 1; }
+
+/* ---------------- the opening ritual ---------------- */
+.ritual-wrap { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: var(--sumi); transition: opacity 1s ease, visibility 1s; }
+.ritual-wrap.gone { opacity: 0; visibility: hidden; }
+.ritual-paper { position: relative; width: min(180px, 34vw); aspect-ratio: 1 / 3.1; transform: translateY(8px); animation: rp-in 1s cubic-bezier(.2,.7,.1,1) both;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 56%); mask-image: linear-gradient(to bottom, #000 0 48%, transparent 56%);
+  -webkit-mask-size: 100% 230%; mask-size: 100% 230%; -webkit-mask-position: 0 0; mask-position: 0 0; }
+.ritual-paper.burn { animation: rp-burn 1.5s cubic-bezier(.5,0,.6,1) forwards; }
+@keyframes rp-in { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(8px); } }
+@keyframes rp-burn { to { -webkit-mask-position: 0 100%; mask-position: 0 100%; } }
+.ritual-paper svg { width: 100%; height: 100%; display: block; }
+.ritual-paper .pap { fill: url(#washi); }
+.ritual-paper .rule { stroke: var(--shu); stroke-width: 2; }
+.ritual-paper .rei { font: 400 120px/1 var(--f-brush); fill: transparent; stroke: var(--shu); stroke-width: 1.6; stroke-dasharray: 900; stroke-dashoffset: 900; animation: brush 1.3s .5s cubic-bezier(.6,0,.3,1) forwards, ink .5s 1.6s forwards; }
+@keyframes brush { to { stroke-dashoffset: 0; } }
+@keyframes ink { to { fill: var(--shu); } }
+.ritual-paper .spell { font: 400 22px/1 var(--f-brush); fill: #2A1A12; opacity: 0; animation: fadein .6s 1.7s forwards; }
+.ritual-paper .stamp { opacity: 0; transform-origin: 100px 470px; transform-box: view-box; animation: stamp .35s 2.15s cubic-bezier(.3,1.6,.5,1) forwards; }
+@keyframes stamp { from { opacity: 0; transform: scale(1.8) rotate(-12deg); } to { opacity: 1; transform: scale(1) rotate(-4deg); } }
+@keyframes fadein { to { opacity: 1; } }
+.ritual-edge { position: absolute; left: -6%; right: -6%; height: 14px; bottom: -7px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,190,110,.95), rgba(255,110,40,.6) 45%, transparent); filter: blur(2px); opacity: 0; }
+.ritual-paper.burn + .ritual-edge, .ritual-edge.go { animation: edge 1.5s cubic-bezier(.5,0,.6,1) forwards; }
+@keyframes edge { 0% { opacity: 1; bottom: 0; } 90% { opacity: 1; } 100% { opacity: 0; bottom: 100%; } }
+.ritual-stage { position: relative; }
+.ritual-caption { position: absolute; left: 50%; bottom: max(30px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); text-align: center; white-space: nowrap; }
+.ritual-skip { position: absolute; right: max(18px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 18px); background: none; border: 1px solid #2A2E38; color: var(--ash); font: 400 11px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; padding: 10px 14px; cursor: pointer; }
+.ritual-skip:hover { color: var(--washi); border-color: var(--ash); }
+
+/* ---------------- top bar ---------------- */
+.bar { position: absolute; inset: 0 0 auto; z-index: 6; }
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 22px; }
+.mark { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.mark .kanji { font: 400 26px/1 var(--f-brush); color: var(--shu); width: 38px; height: 38px; display: grid; place-items: center; border: 1.5px solid var(--shu); border-radius: 4px; background: rgba(200,50,43,.06); }
+.mark b { font: 600 18px/1 var(--f-display); letter-spacing: .32em; color: var(--washi); }
+.bar-right { display: flex; align-items: center; gap: 28px; }
+.nav { display: flex; gap: 26px; }
+.nav a { font: 400 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); text-decoration: none; transition: color .2s; }
+.nav a:hover { color: var(--washi); }
+.sound { display: inline-flex; align-items: center; gap: 10px; background: none; border: 1px solid #2A2E38; color: var(--ash); font: 400 11px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; padding: 9px 12px; cursor: pointer; transition: color .2s, border-color .2s; }
+.sound:hover { color: var(--washi); border-color: var(--ash); }
+.sound .k { font: 400 15px/1 var(--f-brush); color: var(--ash); }
+.sound .bars { display: inline-flex; gap: 2px; align-items: flex-end; height: 10px; }
+.sound .bars i { width: 2px; height: 3px; background: currentColor; }
+.sound[aria-pressed="true"] { color: var(--washi); border-color: rgba(169,184,255,.4); }
+.sound[aria-pressed="true"] .k { color: var(--shu); }
+.sound[aria-pressed="true"] .bars i { animation: eq .9s ease-in-out infinite alternate; }
+.sound[aria-pressed="true"] .bars i:nth-child(2) { animation-delay: .2s; } .sound[aria-pressed="true"] .bars i:nth-child(3) { animation-delay: .45s; }
+@keyframes eq { from { height: 2px; } to { height: 10px; } }
+
+/* ---------------- hero ---------------- */
+.hero { position: relative; height: clamp(660px, 94vh, 940px); overflow: hidden; isolation: isolate;
+  background:
+    radial-gradient(60% 55% at 68% 42%, rgba(120,135,220,.10), transparent 70%),
+    radial-gradient(40% 30% at 68% 80%, rgba(255,140,60,.07), transparent 70%),
+    var(--sumi); }
+#spirit { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.hero::after { content: ""; position: absolute; inset: auto 0 0; height: 180px; z-index: 2; pointer-events: none; background: linear-gradient(transparent, var(--sumi)); }
+.hero-copy { position: relative; z-index: 3; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 620px; padding-top: 40px; }
+.vert { position: absolute; z-index: 3; right: max(16px, env(safe-area-inset-right, 0px)); top: 120px; writing-mode: vertical-rl; font: 400 13px/1 var(--f-mono); letter-spacing: .5em; color: var(--ash); }
+.vert span { color: var(--shu); }
+.wordmark { font: 800 clamp(72px, 10.6vw, 152px)/.9 var(--f-display); letter-spacing: .04em; margin: 18px 0 18px; white-space: nowrap; filter: drop-shadow(0 0 18px rgba(169,184,255,.28)); }
+.wordmark .ch { display: inline-block; color: transparent; background: radial-gradient(circle, var(--washi) 1.35px, transparent 1.75px) 0 0 / 5px 5px; -webkit-background-clip: text; background-clip: text; }
+.go .wordmark .ch { animation: settle 1.5s cubic-bezier(.2,.7,.1,1) both; animation-delay: calc(var(--i) * 90ms); }
+@keyframes settle { from { opacity: 0; filter: blur(16px); transform: translateY(14px); } to { opacity: 1; filter: blur(0); transform: none; } }
+.lede { font: 600 clamp(24px, 2.6vw, 33px)/1.3 var(--f-display); color: var(--washi); margin: 0; text-wrap: balance; }
+.lede em { font-style: normal; color: var(--shu); }
+.sub { margin: 14px 0 0; max-width: 46ch; color: var(--mist); }
+.ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 2px; font: 400 13px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: background .2s, color .2s, border-color .2s, box-shadow .3s; }
+.btn-seal { background: var(--shu); color: var(--washi); }
+.btn-seal:hover { box-shadow: 0 0 30px rgba(200,50,43,.5); background: var(--shu-hot); }
+.btn-ghost { border-color: #2A2E38; color: var(--washi); background: rgba(13,15,20,.5); }
+.btn-ghost:hover { border-color: var(--soul); color: var(--soul); }
+.hero-foot { position: absolute; z-index: 3; left: 0; right: 0; bottom: 26px; }
+.hero-foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.scrollcue { display: inline-flex; align-items: center; gap: 10px; }
+.scrollcue i { width: 1px; height: 28px; background: linear-gradient(var(--ash), transparent); animation: drip 2s ease-in-out infinite; transform-origin: top; }
+@keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* the ofuda, floated over the canvas by script */
+.ofuda { position: absolute; z-index: 2; left: 0; top: 0; width: 120px; height: 360px; pointer-events: none; opacity: 0; transition: opacity 1.2s ease .3s; perspective: 700px; }
+.ofuda.on { opacity: 1; }
+.ofuda-inner { position: absolute; inset: 0; transform-origin: 50% 0; transform-style: preserve-3d; will-change: transform; }
+.paper { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 14% 10% 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(120,95,50,.035) 0 2px, transparent 2px 5px),
+    radial-gradient(120% 60% at 50% 0%, #F6EEDB, var(--washi) 55%, var(--washi-dim));
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 93% 89%, 88% 86%, 80% 91%, 72% 87%, 64% 93%, 55% 88%, 47% 94%, 39% 89%, 30% 92%, 22% 87%, 14% 91%, 7% 87%, 0 90%);
+  animation: flicker 5s infinite; }
+.paper::before, .paper::after { content: ""; position: absolute; left: 9%; right: 9%; height: 2px; background: var(--shu); opacity: .85; }
+.paper::before { top: 6%; } .paper::after { top: 8.5%; }
+.paper .rei { font: 400 1px/1 var(--f-brush); color: var(--shu); margin-top: 2%; text-shadow: 0 0 10px rgba(200,50,43,.35); }
+.paper .spell { writing-mode: vertical-rl; font: 400 1px/1.15 var(--f-brush); color: #2A1A12; letter-spacing: .32em; margin-top: 5%; opacity: .88; }
+.paper .stamp { margin-top: auto; margin-bottom: 36%; width: 34%; aspect-ratio: 1; border: 2px solid var(--shu); color: var(--shu); display: grid; place-items: center; font: 400 1px/1 var(--f-brush); transform: rotate(-4deg); opacity: .9; }
+.glowback { position: absolute; inset: -12%; background: radial-gradient(closest-side, rgba(255,214,150,.20), transparent); filter: blur(10px); }
+.char { position: absolute; left: 0; right: 0; bottom: 6%; height: 12%; background: radial-gradient(60% 100% at 50% 100%, rgba(255,120,40,.6), transparent 70%); filter: blur(6px); mix-blend-mode: screen; animation: char 1.8s ease-in-out infinite alternate; }
+@keyframes flicker { 0%,100%,46% { filter: brightness(1); } 48% { filter: brightness(.84); } 50% { filter: brightness(1.05); } 72% { filter: brightness(.95); } }
+@keyframes char { from { opacity: .55; } to { opacity: 1; } }
+
+/* incantation band */
+.band-marquee { border-block: 1px solid var(--line); overflow: hidden; padding-block: 22px; background: var(--sumi); position: relative; z-index: 1; }
+.marquee { display: flex; width: max-content; animation: marq 48s linear infinite; }
+.marquee span { font: 600 clamp(26px, 3.4vw, 44px)/1 var(--f-display); white-space: nowrap; padding-right: 48px; color: transparent; -webkit-text-stroke: 1px rgba(237,227,204,.38); }
+.marquee span.k { font-family: var(--f-brush); -webkit-text-stroke: 0; color: var(--shu); opacity: .85; }
+@keyframes marq { to { transform: translateX(-50%); } }
+
+/* ---------------- sections ---------------- */
+section.band { padding-block: 130px; position: relative; }
+.sigil { position: absolute; top: 90px; right: max(16px, env(safe-area-inset-right, 0px)); font: 400 clamp(120px, 15vw, 210px)/1 var(--f-brush); color: rgba(237,227,204,.035); pointer-events: none; user-select: none; writing-mode: vertical-rl; clip-path: inset(0 0 100% 0); transition: clip-path 1.6s cubic-bezier(.6,0,.2,1); }
+.sigil.in { clip-path: inset(0 0 0 0); }
+.eyebrow { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+.eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--line); max-width: 220px; }
+h2 { font: 600 clamp(32px, 4.3vw, 54px)/1.12 var(--f-display); color: var(--washi); margin: 0 0 22px; text-wrap: balance; letter-spacing: .005em; }
+h2 em { font-style: normal; color: var(--shu); }
+
+/* legend */
+.legend { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 64px; align-items: start; }
+.legend p { max-width: 62ch; margin: 0 0 18px; }
+.gloss { border-left: 1px solid var(--line); padding-left: 28px; display: grid; gap: 26px; }
+.gloss div { display: grid; gap: 4px; }
+.gloss .k { font: 400 54px/1 var(--f-brush); color: var(--washi); }
+.gloss .k.red { color: var(--shu); }
+.gloss .r { font: 400 12px/1.4 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ash); }
+.gloss .m { font-size: 15px; color: var(--mist); line-height: 1.5; }
+.pull { margin-top: 34px; padding: 26px 30px; border: 1px solid var(--line); background: var(--sumi-2); max-width: 62ch; color: var(--washi); font-size: 19px; line-height: 1.6; position: relative; }
+.pull::before { content: "急急如律令"; position: absolute; right: -14px; top: 16px; writing-mode: vertical-rl; font: 400 15px/1 var(--f-brush); color: var(--shu); letter-spacing: .2em; background: var(--sumi); padding: 6px 0; }
+
+/* abstract */
+.abstract { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 64px; align-items: start; }
+.abstract .meta { display: grid; gap: 18px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.abstract .meta div { display: grid; gap: 4px; }
+.abstract .meta b { font: 400 14px/1.4 var(--f-mono); color: var(--washi); }
+.abstract .body p { max-width: 64ch; margin: 0 0 20px; font-size: 18px; }
+.abstract .body p:first-of-type { font-size: 21px; line-height: 1.65; color: var(--washi); }
+.keywords { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.keywords span { font: 400 11px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--soul); border: 1px solid rgba(169,184,255,.22); padding: 8px 10px; }
+
+/* mechanism */
+.mech-head { max-width: 760px; }
+.steps { list-style: none; margin: 56px 0 0; padding: 0; }
+.step { display: grid; grid-template-columns: 110px 64px minmax(0, 1fr) minmax(0, 290px); gap: 28px; align-items: start; padding: 30px 0; border-top: 1px solid var(--line); position: relative; }
+.step:last-child { border-bottom: 1px solid var(--line); }
+.step::before { content: ""; position: absolute; left: 0; top: -1px; height: 1px; width: 0; background: linear-gradient(90deg, var(--shu), transparent); transition: width 1.2s cubic-bezier(.6,0,.2,1); }
+.step.lit::before { width: 60%; }
+.step .n { font: 400 13px/1.6 var(--f-mono); color: var(--ash); letter-spacing: .14em; }
+.step .k { font: 400 46px/1 var(--f-brush); color: var(--washi); transition: color .6s, text-shadow .6s; }
+.step.lit .k { text-shadow: 0 0 22px rgba(169,184,255,.35); }
+.step h3 { font: 600 24px/1.25 var(--f-display); color: var(--washi); margin: 0 0 8px; }
+.step p { margin: 0; max-width: 58ch; }
+.step .io { font: 400 12.5px/1.7 var(--f-mono); color: var(--ash); border-left: 1px solid var(--line); padding-left: 18px; }
+.step .io b { color: var(--soul); font-weight: 400; }
+.step.red .k { color: var(--shu); }
+.step.red.lit .k { text-shadow: 0 0 22px rgba(232,68,58,.45); }
+
+/* the dispute game */
+.game { margin-top: 70px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--sumi-2), var(--sumi)); padding: 30px; display: grid; gap: 22px; }
+.game-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+.game-top h3 { font: 600 26px/1.2 var(--f-display); color: var(--washi); margin: 6px 0 0; }
+.game-top p { margin: 6px 0 0; max-width: 60ch; font-size: 15.5px; }
+.game-ctl { display: flex; gap: 10px; flex-wrap: wrap; }
+.trace { display: grid; grid-template-columns: repeat(64, minmax(0, 1fr)); gap: 3px; }
+.cell { height: 54px; background: #1A1E2A; border-radius: 1px; position: relative; transition: background .35s, opacity .35s, box-shadow .35s, transform .35s; }
+.cell.agree { opacity: .22; }
+.cell.range { background: #2B3350; }
+.cell.mid { background: var(--soul); box-shadow: 0 0 14px rgba(169,184,255,.7); transform: scaleY(1.12); }
+.cell.bad { background: var(--shu-hot); box-shadow: 0 0 22px rgba(232,68,58,.9); transform: scaleY(1.3); opacity: 1; }
+.trace-axis { display: flex; justify-content: space-between; font: 400 11px/1 var(--f-mono); color: var(--ash); letter-spacing: .1em; margin-top: -12px; }
+.game-read { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.game-read div { padding: 14px 14px 0 0; display: grid; gap: 4px; }
+.game-read b { font: 400 22px/1.2 var(--f-mono); color: var(--washi); font-variant-numeric: tabular-nums; font-weight: 400; }
+.game-log { font: 400 12.5px/1.75 var(--f-mono); color: var(--ash); background: var(--sumi); border: 1px solid var(--line); padding: 14px 16px; height: 148px; overflow: auto; }
+.game-log .ok { color: var(--ok); } .game-log .hit { color: var(--shu-hot); } .game-log .st { color: var(--soul); }
+.game-note { font-size: 14px; color: var(--ash); margin: 0; max-width: 80ch; }
+
+.compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 64px; border: 1px solid var(--line); }
+.compare > div { padding: 26px 26px 28px; border-right: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+.compare > div:last-child { border-right: 0; background: var(--sumi-2); }
+.compare h4 { margin: 0; font: 400 12px/1.4 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
+.compare .big { font: 600 22px/1.3 var(--f-display); color: var(--washi); }
+.compare p { margin: 0; font-size: 15.5px; line-height: 1.6; }
+.compare > div:last-child h4 { color: var(--shu); }
+
+/* three marks: ofuda strips */
+.marks-head { max-width: 720px; }
+.marks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; margin-top: 50px; perspective: 1200px; }
+.strip { position: relative; color: #2A1A12; padding: 34px 26px 36px; min-height: 430px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 10px;
+  background: repeating-linear-gradient(0deg, rgba(120,95,50,.035) 0 2px, transparent 2px 5px), linear-gradient(180deg, #F3EAD5, var(--washi) 60%, #E2D6B8);
+  box-shadow: 0 30px 60px -30px rgba(0,0,0,.8); transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .5s; }
+.strip:hover { box-shadow: 0 40px 70px -30px rgba(0,0,0,.9), 0 0 50px rgba(255,214,150,.14); }
+.strip::before { content: ""; position: absolute; left: 22px; right: 22px; top: 16px; border-top: 2px solid var(--shu); border-bottom: 2px solid var(--shu); height: 5px; }
+.strip .k { font: 400 96px/1 var(--f-brush); color: var(--shu); margin-top: 8px; }
+.strip h3 { font: 800 15px/1.2 var(--f-mono); letter-spacing: .28em; text-transform: uppercase; margin: 6px 0 0; color: #2A1A12; }
+.strip p { margin: 6px 0 0; font-size: 16px; line-height: 1.6; color: #3B2A1E; }
+.strip .stamp { justify-self: end; width: 46px; height: 46px; border: 2px solid var(--shu); color: var(--shu); display: grid; place-items: center; font: 400 22px/1 var(--f-brush); transform: rotate(6deg); opacity: .85; }
+
+/* specification */
+.spec { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 64px; align-items: start; }
+.spec p { margin: 0; max-width: 44ch; }
+.spec-table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+.spec-table th, .spec-table td { text-align: left; vertical-align: top; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.spec-table th { font: 400 12px/1.5 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ash); width: 30%; padding-right: 18px; }
+.spec-table td { color: var(--washi); }
+.spec-table td small { display: block; color: var(--ash); font-size: 13.5px; line-height: 1.5; margin-top: 3px; }
+.spec-table td .tag { float: right; margin-left: 12px; font: 400 10.5px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--amber); border: 1px solid rgba(233,180,106,.3); padding: 6px 8px; }
+.spec-table td .tag.fixed { color: var(--soul); border-color: rgba(169,184,255,.28); }
+.spec-table tr { transition: background .3s; }
+.spec-table tr:hover { background: rgba(169,184,255,.03); }
+.spec-wrap { overflow-x: auto; }
+
+/* open questions */
+.questions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 46px; border-top: 1px solid var(--line); }
+.q { padding: 28px 28px 30px 0; border-bottom: 1px solid var(--line); display: grid; gap: 8px; align-content: start; }
+.q:nth-child(odd) { border-right: 1px solid var(--line); }
+.q:nth-child(even) { padding-left: 28px; padding-right: 0; }
+.q h3 { font: 600 20px/1.3 var(--f-display); color: var(--washi); margin: 0; }
+.q p { margin: 0; font-size: 15.5px; line-height: 1.65; max-width: 52ch; }
+.q .label { color: var(--shu); }
+
+/* register */
+.register { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 64px; align-items: start; }
+.register p { max-width: 46ch; margin: 0; }
+.ledger { border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 140px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.row .what { font: 400 12px/1.4 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
+.row .val { color: var(--washi); min-width: 0; overflow-wrap: anywhere; }
+.row .val small { display: block; color: var(--ash); font-size: 14px; line-height: 1.5; margin-top: 2px; }
+.pill { font: 400 11px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; padding: 7px 10px; border-radius: 99px; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; border: 1px solid; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.live { color: var(--ok); border-color: rgba(143,211,168,.35); }
+.pill.wip { color: var(--amber); border-color: rgba(233,180,106,.35); }
+.pill.wip::before { animation: pulse 1.6s ease-in-out infinite; }
+.pill.none { color: var(--ash); border-color: #2A2E38; }
+@keyframes pulse { 50% { opacity: .25; } }
+.ca { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.ca code { font: 400 13px/1.4 var(--f-mono); color: var(--ash); background: var(--sumi-2); border: 1px dashed #2A2E38; padding: 8px 12px; overflow-wrap: anywhere; }
+.copy { font: 400 11px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--washi); background: none; border: 1px solid #2A2E38; padding: 9px 12px; cursor: pointer; }
+.copy:disabled { opacity: .4; cursor: not-allowed; }
+
+/* closing seal */
+.closing { padding-block: 120px 40px; text-align: center; position: relative; }
+.closing .seal { width: 120px; height: 120px; margin: 0 auto 30px; border: 3px solid var(--shu); color: var(--shu); display: grid; place-items: center; font: 400 64px/1 var(--f-brush); transform: rotate(-6deg) scale(1.6); opacity: 0; transition: transform .45s cubic-bezier(.3,1.6,.5,1), opacity .3s; box-shadow: inset 0 0 0 4px rgba(200,50,43,.12); }
+.closing .seal.in { transform: rotate(-6deg) scale(1); opacity: .95; }
+.closing h2 { max-width: 18ch; margin-inline: auto; }
+.closing p { max-width: 50ch; margin: 0 auto; }
+
+footer { position: relative; padding-block: 80px 60px; border-top: 1px solid var(--line); overflow: hidden; }
+footer .ghostkanji { position: absolute; right: -2%; bottom: -12%; font: 400 clamp(220px, 34vw, 420px)/1 var(--f-brush); color: rgba(237,227,204,.03); pointer-events: none; user-select: none; }
+footer .wrap { position: relative; display: flex; justify-content: space-between; align-items: end; gap: 30px; flex-wrap: wrap; }
+footer .warn { color: var(--washi); max-width: 34ch; font-size: 20px; line-height: 1.45; margin: 0; }
+footer .warn b { color: var(--shu); font-weight: 600; }
+footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+
+/* reveal on scroll, from a visible resting state */
+.rise { transition: transform .9s cubic-bezier(.2,.7,.2,1), opacity .9s; }
+.js .rise.pre { transform: translateY(18px); opacity: .35; }
+
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hero { height: auto; min-height: 0; }
+  .hero-copy { height: auto; padding-top: 470px; padding-bottom: 90px; }
+  .vert, .hero-foot { display: none; }
+  .legend, .register, .abstract, .spec { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .abstract .meta { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gloss { border-left: 0; padding-left: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .gloss .k { font-size: 40px; }
+  .step { grid-template-columns: 52px minmax(0, 1fr); gap: 14px 18px; }
+  .step .n { grid-column: 1 / -1; }
+  .step .k { grid-column: 1; grid-row: 2; font-size: 34px; }
+  .step > div:not(.io) { grid-column: 2; grid-row: 2; }
+  .step .io { grid-column: 1 / -1; grid-row: 3; }
+  .game { padding: 20px 16px; }
+  .trace { grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px; }
+  .cell { height: 30px; }
+  .game-read { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compare { grid-template-columns: minmax(0, 1fr); }
+  .compare > div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .marks { grid-template-columns: minmax(0, 1fr); }
+  .strip { min-height: 0; }
+  .questions { grid-template-columns: minmax(0, 1fr); }
+  .q, .q:nth-child(even) { padding: 24px 0; border-right: 0; }
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .what { grid-column: 1 / -1; }
+  section.band { padding-block: 90px; }
+  .pull::before { display: none; }
+  .sound .t { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper, .char, .pill.wip::before, .marquee, .grain, .scrollcue i { animation: none; }
+  .go .wordmark .ch { animation: none; }
+  .js .rise.pre { transform: none; opacity: 1; }
+  .sigil { clip-path: none; transition: none; }
+  .closing .seal { transform: rotate(-6deg); opacity: .95; transition: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="grain" aria-hidden="true"></div>
+<div class="wisp" id="wisp" aria-hidden="true"></div>
+
+<!-- the opening ritual: brush, stamp, burn -->
+<div class="ritual-wrap" id="ritual" aria-hidden="true" hidden>
+  <div class="ritual-stage">
+    <div class="ritual-paper" id="ritualPaper">
+      <svg viewBox="0 0 200 620" preserveAspectRatio="none">
+        <defs><linearGradient id="washi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6EEDB"/><stop offset=".6" stop-color="#EDE3CC"/><stop offset="1" stop-color="#D9CBA8"/></linearGradient></defs>
+        <rect class="pap" x="0" y="0" width="200" height="620"/>
+        <line class="rule" x1="18" y1="34" x2="182" y2="34"/><line class="rule" x1="18" y1="46" x2="182" y2="46"/>
+        <text class="rei" x="100" y="190" text-anchor="middle">霊</text>
+        <text class="spell" x="100" y="250" text-anchor="middle" writing-mode="tb" style="writing-mode: vertical-rl" letter-spacing="7">急急如律令</text>
+        <g class="stamp"><rect x="70" y="440" width="60" height="60" fill="none" stroke="#C8322B" stroke-width="3"/><text x="100" y="483" text-anchor="middle" fill="#C8322B" style="font: 400 38px var(--f-brush)">封</text></g>
+      </svg>
+    </div>
+    <div class="ritual-edge" id="ritualEdge"></div>
+  </div>
+  <div class="ritual-caption label">急急如律令 · swiftly, by the law</div>
+  <button class="ritual-skip" id="ritualSkip" type="button">Skip</button>
+</div>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Yurei, back to top"><span class="kanji" aria-hidden="true">霊</span><b>YUREI</b></a>
+    <div class="bar-right">
+      <nav class="nav" aria-label="Sections"><a href="#thesis">Thesis</a><a href="#mechanism">Mechanism</a><a href="#spec">Specification</a><a href="#register">Register</a></nav>
+      <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Ambient sound"><span class="k" aria-hidden="true">音</span><span class="t">Sound</span><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Yurei">
+    <canvas id="spirit" aria-hidden="true"></canvas>
+    <div class="ofuda" id="ofuda" aria-hidden="true">
+      <div class="ofuda-inner" id="ofudaInner">
+        <div class="glowback"></div>
+        <div class="paper">
+          <div class="rei" data-fs="0.62">霊</div>
+          <div class="spell" data-fs="0.13">急急如律令</div>
+          <div class="stamp" data-fs="0.16">封</div>
+        </div>
+        <div class="char"></div>
+      </div>
+    </div>
+    <div class="vert">幽霊 · <span>ROBINHOOD CHAIN</span> · FIG. 001</div>
+    <div class="wrap" style="height:100%">
+      <div class="hero-copy">
+        <div class="label">Bound inference · Robinhood Chain · Research edition</div>
+        <h1 class="wordmark" aria-label="Yurei"><span class="ch" style="--i:0">Y</span><span class="ch" style="--i:1">U</span><span class="ch" style="--i:2">R</span><span class="ch" style="--i:3">E</span><span class="ch" style="--i:4">I</span></h1>
+        <p class="lede">A spirit, <em>bound by contract.</em></p>
+        <p class="sub">Yurei is a research program for accountable AI on Robinhood Chain: a model that reasons off-chain, answers onchain, and can be proven wrong by anyone. What its answers may do is fixed by a seal it cannot amend.</p>
+        <div class="ctas">
+          <a class="btn btn-seal" href="#thesis">Read the thesis</a>
+          <a class="btn btn-ghost" id="xLink" href="https://x.com/" target="_blank" rel="noopener">Follow on X</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-foot"><div class="wrap"><span class="label">Move your light near her</span><span class="label scrollcue"><i></i>Scroll to read the seal</span></div></div>
+  </section>
+
+  <div class="band-marquee" aria-hidden="true">
+    <div class="marquee">
+      <span>Verify the answer</span><span class="k">急急如律令</span><span>Don't recompute the mind</span><span class="k">幽霊</span><span>Bound by contract</span><span class="k">封</span>
+      <span>Verify the answer</span><span class="k">急急如律令</span><span>Don't recompute the mind</span><span class="k">幽霊</span><span>Bound by contract</span><span class="k">封</span>
+    </div>
+  </div>
+
+  <section class="band" id="legend">
+    <div class="sigil" aria-hidden="true">幽霊</div>
+    <div class="wrap legend">
+      <div class="rise pre">
+        <div class="eyebrow"><span class="label">The legend</span></div>
+        <h2>In the old stories, a yūrei is a soul that <em>could not rest.</em></h2>
+        <p>幽霊 means a faint spirit. In Japanese folklore it is the soul of someone who could not move on: a white burial robe, long dark hair, no feet, drifting at the edge of the lamplight.</p>
+        <p>What keeps a yūrei out is an ofuda, a strip of paper written in red ink and pressed to a door or a beam. The spirit can be anywhere. It cannot cross the seal.</p>
+        <div class="pull">Yurei is that idea, rebuilt on Robinhood Chain: something with real power that lives onchain, held by rules written in code instead of promises.</div>
+      </div>
+      <aside class="gloss rise pre" aria-label="Glossary">
+        <div><span class="k">幽</span><span class="r">yū · faint</span><span class="m">dim, hidden, out of reach</span></div>
+        <div><span class="k">霊</span><span class="r">rei · spirit</span><span class="m">soul, the part that lingers</span></div>
+        <div><span class="k red">札</span><span class="r">fuda · charm</span><span class="m">the paper seal that holds it</span></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="band" id="thesis">
+    <div class="sigil" aria-hidden="true">論</div>
+    <div class="wrap abstract">
+      <div class="meta rise pre">
+        <div><span class="label">Document</span><b>Yurei / Thesis</b></div>
+        <div><span class="label">Status</span><b>Draft 0.1 · Oct 2026</b></div>
+        <div><span class="label">Chain</span><b>Robinhood Chain · 4663</b></div>
+        <div><span class="label">Settlement</span><b>USDG</b></div>
+      </div>
+      <div class="body rise pre">
+        <div class="eyebrow"><span class="label">Abstract</span></div>
+        <h2>Verify the answer. <em>Don't recompute the mind.</em></h2>
+        <p>Machine intelligence that acts with real money has two bad options today. It can run on a server you cannot inspect, which asks you to trust whoever runs it. Or it can run entirely inside smart contracts, which makes every step verifiable but costs orders of magnitude more than the answer is worth.</p>
+        <p>Yurei takes a third path, borrowed from how optimistic rollups secure their own state. A committed model runs off-chain. Each answer is posted onchain together with a cryptographic commitment to the computation that produced it. Anyone may challenge an answer within a fixed window. A dispute is narrowed, by bisection, to a single step of the model's arithmetic, and only that one step is re-executed onchain to decide who lied.</p>
+        <p>An honest answer costs one ordinary transaction. A dishonest one costs its author a bond. Around both sits the seal: a policy contract, fixed at creation, that decides what any answer is allowed to do, however persuasive the answer is.</p>
+        <div class="keywords"><span>Optimistic inference</span><span>Interactive fraud proofs</span><span>Fixed-point determinism</span><span>Policy contracts</span><span>Robinhood Chain</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="mechanism">
+    <div class="sigil" aria-hidden="true">証</div>
+    <div class="wrap">
+      <div class="mech-head rise pre">
+        <div class="eyebrow"><span class="label">The mechanism</span></div>
+        <h2>From a question to an action, <em>in five stages.</em></h2>
+        <p style="max-width:60ch;margin:0">Each stage leaves a record on Robinhood Chain. Nothing moves until the record says it may.</p>
+      </div>
+      <ol class="steps">
+        <li class="step rise pre"><span class="n">01 / Request</span><span class="k">問</span><div><h3>The question is escrowed</h3><p>A requester submits a prompt with a fee and an upper bound on cost. The seal is consulted first: a request the policy would never allow to act is refused before any work is done.</p></div><div class="io"><b>in</b> prompt, fee, bounds<br><b>out</b> request id, escrow</div></li>
+        <li class="step rise pre"><span class="n">02 / Inference</span><span class="k">考</span><div><h3>The spirit answers off-chain</h3><p>A bonded executor runs the committed model, whose weights are fixed by hash, in deterministic fixed-point arithmetic. It posts the answer and a Merkle root over the execution trace.</p></div><div class="io"><b>in</b> request, model hash<br><b>out</b> answer, trace root, bond</div></li>
+        <li class="step rise pre"><span class="n">03 / Challenge</span><span class="k">疑</span><div><h3>Anyone may doubt it</h3><p>For a fixed window, any watcher who recomputes a different result can challenge by posting a bond of their own. Silence is the normal case, and silence is cheap.</p></div><div class="io"><b>in</b> answer, counter-claim<br><b>out</b> dispute, or nothing</div></li>
+        <li class="step red rise pre"><span class="n">04 / Proof</span><span class="k">証</span><div><h3>One step decides the truth</h3><p>The two parties bisect the trace until they disagree about a single operation. The chain re-executes that one operation, compares it to both claims, and slashes the bond of whoever was wrong.</p></div><div class="io"><b>in</b> disputed trace<br><b>out</b> one-step verdict, slashed bond</div></li>
+        <li class="step rise pre"><span class="n">05 / Action</span><span class="k">封</span><div><h3>The seal releases, or holds</h3><p>After the window closes, the answer becomes final. If it calls for an action, such as a payment or a contract call, the seal checks it against limits written at creation. Inside them, it executes. Outside them, nothing happens.</p></div><div class="io"><b>in</b> final answer<br><b>out</b> action, or refusal</div></li>
+      </ol>
+
+      <div class="game rise pre" id="game">
+        <div class="game-top">
+          <div><span class="label">Stage 04, simulated</span><h3>Watch a lie get caught.</h3><p>An executor posts an answer with one corrupted step hidden somewhere in its trace. A challenger disagrees. Each round, both sides reveal the state at the midpoint of the disputed range, and half of it is ruled out.</p></div>
+          <div class="game-ctl"><button class="btn btn-seal" id="gameRun" type="button">Run a dispute</button><button class="btn btn-ghost" id="gameReset" type="button">Reset</button></div>
+        </div>
+        <div class="trace" id="trace" role="img" aria-label="Execution trace of 64 steps"></div>
+        <div class="trace-axis"><span>step 0</span><span>execution trace</span><span>step 63</span></div>
+        <div class="game-read">
+          <div><span class="label">Round</span><b id="gRound">0 / 6</b></div>
+          <div><span class="label">Disputed range</span><b id="gRange">0 to 63</b></div>
+          <div><span class="label">Steps left</span><b id="gLeft">64</b></div>
+          <div><span class="label">Re-executed onchain</span><b id="gOn">0 steps</b></div>
+        </div>
+        <div class="game-log" id="gLog" aria-live="polite"><span class="st">ready</span> · trace committed · root 0x7a1f…c93e · press Run a dispute</div>
+        <p class="game-note">Simulation. A real trace has millions of steps, but rounds grow with the logarithm of its length: a million steps settle in about 20 rounds, and the chain still re-executes exactly one.</p>
+      </div>
+
+      <div class="compare rise pre">
+        <div><h4>Trusted server</h4><span class="big">Cheap, opaque</span><p>Fast and inexpensive, but every answer is a claim you cannot check. The operator can change the model, the output or the rules without telling you.</p></div>
+        <div><h4>Full onchain inference</h4><span class="big">Verifiable, impractical</span><p>Every multiplication runs in a contract. Correct by construction, but a short reply can cost more than most people would ever pay for it.</p></div>
+        <div><h4>Yurei</h4><span class="big">Verifiable when it matters</span><p>Answers cost about one transaction. Proof is paid for only when someone disputes, and only for the single step in question.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="marks">
+    <div class="sigil" aria-hidden="true">封</div>
+    <div class="wrap">
+      <div class="marks-head rise pre">
+        <div class="eyebrow"><span class="label">The seal</span></div>
+        <h2>Three marks are written on the seal.</h2>
+        <p style="max-width:58ch;margin:0">On an old ofuda the ink does the work. On Yurei, the contract does. These are the rules the seal is being written to keep.</p>
+      </div>
+      <div class="marks">
+        <article class="strip rise pre"><div class="k">縛</div><h3>Bound</h3><p>Its rules live in a contract, not in a promise. What the seal forbids, the spirit cannot do, whoever asks.</p><span class="stamp">封</span></article>
+        <article class="strip rise pre"><div class="k">証</div><h3>Witnessed</h3><p>Every answer is posted on Robinhood Chain with a commitment to how it was made. Anyone can read the record and anyone can contest it.</p><span class="stamp">封</span></article>
+        <article class="strip rise pre"><div class="k">限</div><h3>Limited</h3><p>Answers act only inside limits you can check before you trust them. Outside them, the seal holds and the spirit stops.</p><span class="stamp">封</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="spec">
+    <div class="sigil" aria-hidden="true">律</div>
+    <div class="wrap spec">
+      <div class="rise pre">
+        <div class="eyebrow"><span class="label">Specification</span></div>
+        <h2>The seal, <em>in numbers.</em></h2>
+        <p>Design targets for the first edition. Values marked Target will change as the contracts are written and measured. When a number is measured on mainnet, it is marked Fixed and linked to its receipt.</p>
+      </div>
+      <div class="spec-wrap rise pre">
+        <table class="spec-table">
+          <tr><th>Model</th><td>Small open-weight language model<small>Weights committed by keccak256 hash; any change means a new spirit.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Arithmetic</th><td>Deterministic fixed-point, quantized<small>Removes floating-point drift so two honest executors always agree.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Commitment</th><td>Merkle root over the execution trace<small>Posted with every answer; the basis for any challenge.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Challenge window</th><td>30 minutes<small>Long enough for watchers, short enough to be useful.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Dispute game</th><td>Interactive bisection to one step<small>About log₂ of the trace length in rounds.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Cost per answer</th><td>One ordinary transaction<small>Cents on Robinhood Chain, plus the requester's fee.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Seal</th><td>Immutable policy contract<small>Per-action caps, daily limits, allowed recipients and contracts, expiry. No owner can widen it later.</small><span class="tag">Target</span></td></tr>
+          <tr><th>Settlement</th><td>USDG<small>Fees, bonds and payouts in a dollar stablecoin.</small><span class="tag fixed">Fixed</span></td></tr>
+          <tr><th>Network</th><td>Robinhood Chain, chain ID 4663<small>An Arbitrum Orbit chain, itself secured by fraud proofs.</small><span class="tag fixed">Fixed</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="questions">
+    <div class="sigil" aria-hidden="true">疑</div>
+    <div class="wrap">
+      <div class="mech-head rise pre">
+        <div class="eyebrow"><span class="label">Open questions</span></div>
+        <h2>What the research <em>still has to answer.</em></h2>
+        <p style="max-width:60ch;margin:0">A seal is only as strong as its weakest assumption. These are ours, stated plainly.</p>
+      </div>
+      <div class="questions">
+        <div class="q rise pre"><span class="label">Determinism</span><h3>Can two machines always agree?</h3><p>Fraud proofs only work if honest executors produce identical traces. Quantized fixed-point arithmetic should make that true; it has to be shown across hardware and implementations.</p></div>
+        <div class="q rise pre"><span class="label">Liveness</span><h3>Who is watching?</h3><p>An optimistic system is secure if at least one honest watcher checks each answer. Yurei needs watchers to be cheap to run and rewarded for catching lies.</p></div>
+        <div class="q rise pre"><span class="label">Data availability</span><h3>Where does the trace live?</h3><p>Only the root is posted onchain. The full trace must stay retrievable for the length of the window, or a challenger cannot build a proof.</p></div>
+        <div class="q rise pre"><span class="label">One-step cost</span><h3>How expensive is the hardest step?</h3><p>The single operation re-executed onchain must fit in one block. The model's layers are being shaped so that no step is too large to prove.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="register">
+    <div class="sigil" aria-hidden="true">録</div>
+    <div class="wrap register">
+      <div class="rise pre">
+        <div class="eyebrow"><span class="label">The register</span></div>
+        <h2>Where the summoning <em>stands.</em></h2>
+        <p>Shrines keep a register of every charm they issue. This is ours: what exists, what is still being written, and the one place the official token address will appear.</p>
+      </div>
+      <div class="ledger rise pre" role="list">
+        <div class="row" role="listitem"><span class="what">Spirit</span><span class="val">Yurei<small>Being summoned. Follow X for each step.</small></span><span class="pill wip">Summoning</span></div>
+        <div class="row" role="listitem"><span class="what">Seal</span><span class="val">Smart contracts<small>Being written. Source will be public before anything goes live.</small></span><span class="pill wip">Writing</span></div>
+        <div class="row" role="listitem"><span class="what">Chain</span><span class="val">Robinhood Chain<small>Chain ID 4663</small></span><span class="pill live">Live</span></div>
+        <div class="row" role="listitem"><span class="what">Token</span><span class="val">$YUREI<small>Not launched. The official address will appear here and on X, nowhere else.</small>
+          <span class="ca"><code id="caText">Not yet issued</code><button class="copy" id="caCopy" type="button" disabled>Copy</button></span></span><span class="pill none">Not yet</span></div>
+        <div class="row" role="listitem"><span class="what">Audit</span><span class="val">Independent review<small>Planned before any real funds touch the seal.</small></span><span class="pill none">Not yet</span></div>
+        <div class="label" style="padding-top:14px">Register updated 20 Oct 2026</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <div class="seal" id="closingSeal" aria-hidden="true">封</div>
+      <h2>The spirit can be anywhere. <em>It cannot cross the seal.</em></h2>
+      <p>Follow the summoning as the contracts are written, tested and opened to challenge.</p>
+      <div class="ctas" style="justify-content:center"><a class="btn btn-seal" id="xLink3" href="https://x.com/" target="_blank" rel="noopener">Follow on X</a><a class="btn btn-ghost" href="#thesis">Read the thesis again</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="ghostkanji" aria-hidden="true">霊</div>
+  <div class="wrap">
+    <p class="warn"><b>Never trust an address</b> you did not read in this register.</p>
+    <nav aria-label="Links"><a class="label" href="#thesis">Thesis</a><a class="label" href="#mechanism">Mechanism</a><a class="label" href="#spec">Specification</a><a class="label" href="#register">Register</a><a class="label" id="xLink2" href="https://x.com/" target="_blank" rel="noopener">X</a></nav>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // ---- site settings: fill these in when they exist ----
+  const CONFIG = { x: "", ca: "" };
+  if (CONFIG.x) for (const id of ["xLink", "xLink2", "xLink3"]) document.getElementById(id).href = CONFIG.x;
+  if (CONFIG.ca) {
+    const t = document.getElementById("caText"), b = document.getElementById("caCopy");
+    t.textContent = CONFIG.ca; b.disabled = false;
+    b.onclick = async () => { try { await navigator.clipboard.writeText(CONFIG.ca); b.textContent = "Copied"; } catch { const r = document.createRange(); r.selectNodeContents(t); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected"; } setTimeout(() => b.textContent = "Copy", 1600); };
+  }
+
+  document.documentElement.classList.add("js");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(pointer: fine)").matches;
+  const store = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
+
+  // ---- reveal on scroll ----
+  const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const el = e.target; el.classList.remove("pre"); el.classList.add("in", "lit"); io.unobserve(el);
+  }), { rootMargin: "0px 0px -10% 0px" }) : null;
+  document.querySelectorAll(".rise, .sigil, .step, #closingSeal").forEach((el) => io ? io.observe(el) : el.classList.remove("pre"));
+
+  // ---- the spirit: a dot-matrix yurei behind a burning ofuda ----
+  const hero = document.querySelector(".hero"), cv = document.getElementById("spirit"), ctx = cv.getContext("2d");
+  const ofuda = document.getElementById("ofuda"), ofudaInner = document.getElementById("ofudaInner");
+  const FW = 400, FH = 600;
+  let W = 0, H = 0, DPR = 1, fig = { x: 0, y: 0, s: 1 }, pts = [], embers = [], fog = [], motes = [], eye = null;
+  const mouse = { x: -9999, y: -9999, on: false, nx: 0, ny: 0 }, par = { x: 0, y: 0 };
+  let scrollP = 0;
+
+  function sprite(r, g, b, size = 32) {
+    const s = document.createElement("canvas"); s.width = s.height = size;
+    const c = s.getContext("2d"), m = size / 2, gr = c.createRadialGradient(m, m, 0, m, m, m);
+    gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(0.22, `rgba(${r},${g},${b},.75)`); gr.addColorStop(0.5, `rgba(${r},${g},${b},.18)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    c.fillStyle = gr; c.fillRect(0, 0, size, size); return s;
+  }
+  const ramp = (a, b, n) => Array.from({ length: n }, (_, i) => a.map((v, k) => Math.round(v + (b[k] - v) * i / (n - 1))));
+  const ROBE = ramp([232, 236, 252], [130, 142, 210], 8).map((c) => sprite(...c));
+  const HAIR = ramp([128, 118, 186], [62, 58, 104], 6).map((c) => sprite(...c));
+  const FACE = [sprite(246, 246, 255)];
+  const EMBER = [sprite(255, 196, 120), sprite(255, 140, 60), sprite(230, 80, 40)];
+  const MOTE = sprite(169, 184, 255);
+  const RED = sprite(235, 40, 50, 64);
+  const FOG = (() => { const s = document.createElement("canvas"); s.width = s.height = 256; const c = s.getContext("2d"), g = c.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, "rgba(140,155,230,.16)"); g.addColorStop(.6, "rgba(140,155,230,.05)"); g.addColorStop(1, "rgba(140,155,230,0)"); c.fillStyle = g; c.fillRect(0, 0, 256, 256); return s; })();
+
+  function region(draw) {
+    const m = document.createElement("canvas"); m.width = FW; m.height = FH;
+    const g = m.getContext("2d"); g.fillStyle = "#fff"; draw(g); return g.getImageData(0, 0, FW, FH).data;
+  }
+  const hit = (d, x, y) => d[((y | 0) * FW + (x | 0)) * 4 + 3] > 128;
+  function build(step) {
+    const robe = region((g) => {
+      g.beginPath(); g.ellipse(200, 108, 60, 72, 0, 0, 7); g.fill();
+      g.beginPath(); g.moveTo(150, 150); g.bezierCurveTo(118, 260, 112, 380, 128, 470); g.bezierCurveTo(150, 540, 250, 560, 276, 470); g.bezierCurveTo(290, 380, 284, 260, 250, 150); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(160, 175); g.bezierCurveTo(110, 220, 70, 280, 58, 340); g.lineTo(120, 352); g.bezierCurveTo(132, 300, 150, 260, 176, 230); g.fill();
+      g.beginPath(); g.moveTo(240, 175); g.bezierCurveTo(290, 220, 330, 280, 342, 340); g.lineTo(280, 352); g.bezierCurveTo(268, 300, 250, 260, 224, 230); g.fill();
+      g.beginPath(); g.ellipse(84, 360, 16, 9, 0.4, 0, 7); g.fill(); g.beginPath(); g.ellipse(316, 360, 16, 9, -0.4, 0, 7); g.fill();
+    });
+    const hair = region((g) => {
+      g.beginPath(); g.ellipse(200, 100, 66, 74, 0, Math.PI, 0); g.fill();
+      g.beginPath(); g.moveTo(134, 100); g.bezierCurveTo(126, 200, 120, 290, 132, 360); g.lineTo(268, 360); g.bezierCurveTo(280, 290, 274, 200, 266, 100); g.closePath(); g.fill();
+      // loose strands below the veil
+      g.lineWidth = 5; g.strokeStyle = "#fff";
+      for (const x of [140, 152, 248, 262]) { g.beginPath(); g.moveTo(x, 330); g.bezierCurveTo(x - 6, 370, x + 6, 400, x - 2, 430); g.stroke(); }
+    });
+    const face = region((g) => { g.beginPath(); g.moveTo(186, 104); g.lineTo(214, 104); g.bezierCurveTo(222, 150, 218, 200, 206, 236); g.lineTo(194, 236); g.bezierCurveTo(182, 200, 178, 150, 186, 104); g.fill(); });
+    pts = [];
+    for (let y = 0; y < FH; y += step) for (let x = 0; x < FW; x += step) {
+      const jx = x + (Math.random() - 0.5) * step * 0.4, jy = y + (Math.random() - 0.5) * step * 0.4;
+      if (jx < 0 || jy < 0 || jx >= FW || jy >= FH) continue;
+      let kind = null;
+      if (hit(face, jx, jy)) kind = "face"; else if (hit(hair, jx, jy)) kind = "hair"; else if (hit(robe, jx, jy)) kind = "robe";
+      if (!kind) continue;
+      const hem = kind === "robe" && jy > 420;
+      if (hem && Math.random() < (jy - 420) / 160) continue;
+      const set = kind === "robe" ? ROBE : kind === "hair" ? HAIR : FACE;
+      const spr = set[Math.min(set.length - 1, Math.floor(jy / FH * set.length * 1.15))];
+      pts.push({ hx: jx, hy: jy, x: jx, y: jy, vx: 0, vy: 0, kind, spr, r: (kind === "face" ? 1.1 : 1) * (0.75 + Math.random() * 0.5), ph: Math.random() * 6.28, hem, a: 0.55 + Math.random() * 0.45, drift: Math.random() * 140, z: Math.random() });
+    }
+    eye = { x: 207, y: 168, dx: 0, dy: 0 };
+  }
+  // send every dot to the talisman's centre, so she assembles out of the seal
+  function gather() { const cx = FW / 2, cy = 300; for (const p of pts) { const a = Math.random() * 6.28, r = Math.random() * 40; p.x = cx + Math.cos(a) * r; p.y = cy + Math.sin(a) * r * 2.4; p.vx = (Math.random() - .5) * 8; p.vy = (Math.random() - .5) * 8; } }
+
+  function layout() {
+    const r = hero.getBoundingClientRect();
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height; cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const narrow = W < 900;
+    const fh = narrow ? 430 : Math.min(H * 0.9, 780);
+    fig.s = fh / FH;
+    fig.x = (narrow ? W / 2 : W * 0.7) - (FW * fig.s) / 2;
+    fig.y = narrow ? 70 : (H - fh) / 2 + 20;
+    const ow = 0.29 * FW * fig.s, oh = ow * 3.05;
+    ofuda.style.width = ow + "px"; ofuda.style.height = oh + "px";
+    ofuda.style.left = fig.x + (FW * fig.s - ow) / 2 + "px";
+    ofuda.style.top = fig.y + 196 * fig.s + "px";
+    ofuda.querySelectorAll("[data-fs]").forEach((el) => el.style.fontSize = ow * Number(el.dataset.fs) + "px");
+    fog = Array.from({ length: 7 }, (_, i) => ({ x: Math.random() * W, y: H * (0.25 + Math.random() * 0.7), r: 260 + Math.random() * 320, v: (Math.random() - .5) * 0.18, ph: Math.random() * 6 }));
+    motes = Array.from({ length: narrow ? 40 : 90 }, () => ({ x: Math.random() * W, y: Math.random() * H, z: 0.2 + Math.random() * 0.8, v: 0.05 + Math.random() * 0.2, ph: Math.random() * 6 }));
+  }
+
+  function emberSpawn() {
+    const or = ofuda.getBoundingClientRect(), hr = hero.getBoundingClientRect();
+    if (!or.width) return;
+    const x = or.left - hr.left + or.width * (0.08 + Math.random() * 0.84), y = or.top - hr.top + or.height * (0.86 + Math.random() * 0.05);
+    embers.push({ x, y, vx: (Math.random() - 0.5) * 0.25, vy: -(0.25 + Math.random() * 0.75), life: 0, max: 90 + Math.random() * 140, r: 0.6 + Math.random() * 1.3, spr: EMBER[(Math.random() * EMBER.length) | 0], ph: Math.random() * 6.28 });
+  }
+
+  let t = 0, last = performance.now();
+  function frame(now) {
+    const dt = Math.min(2.5, (now - last) / 16.67); last = now; t += 0.016 * dt;
+    ctx.clearRect(0, 0, W, H);
+    if (!eye) { if (!reduce && visible) requestAnimationFrame(frame); else running = false; return; }
+    // parallax follows the light, softly
+    par.x += ((mouse.on ? mouse.nx : 0) * 14 - par.x) * 0.05 * dt; par.y += ((mouse.on ? mouse.ny : 0) * 10 - par.y) * 0.05 * dt;
+    const sp = scrollP;
+
+    // fog drifts behind her
+    ctx.globalCompositeOperation = "lighter";
+    for (const f of fog) { f.x += f.v * dt; if (f.x < -f.r) f.x = W + f.r; if (f.x > W + f.r) f.x = -f.r; ctx.globalAlpha = 0.55 + Math.sin(t * 0.3 + f.ph) * 0.25; const r = f.r; ctx.drawImage(FOG, f.x - r - par.x * 0.6, f.y - r * 0.6 - par.y * 0.6, r * 2, r * 1.2); }
+    // far motes
+    for (const m of motes) { m.y -= m.v * dt * m.z; if (m.y < -10) { m.y = H + 10; m.x = Math.random() * W; } ctx.globalAlpha = (0.25 + Math.sin(t + m.ph) * 0.2) * m.z; const sz = 6 * m.z; ctx.drawImage(MOTE, m.x - par.x * m.z - sz / 2, m.y - par.y * m.z - sz / 2, sz, sz); }
+
+    const s = fig.s, ox = fig.x + par.x, oy = fig.y + par.y;
+    const mxl = (mouse.x - ox) / s, myl = (mouse.y - oy) / s, R = 70 / s;
+    for (const p of pts) {
+      let tx = p.hx, ty = p.hy + Math.sin(t * 0.9 + p.hx * 0.012) * 3;
+      if (p.kind === "hair") tx += Math.sin(t * 0.7 + p.hy * 0.02) * (p.hy - 90) * 0.024;
+      if (p.hem) { p.drift += 0.25 * dt; if (p.drift > 140) p.drift = 0; ty += p.drift * 0.55; tx += Math.sin(p.ph + p.drift * 0.04) * p.drift * 0.15; }
+      if (sp > 0) { ty -= sp * (160 + p.z * 260); tx += Math.sin(p.ph) * sp * 120 * p.z; } // she dissolves upward as you scroll
+      if (mouse.on) {
+        const dx = p.x - mxl, dy = p.y - myl, d2 = dx * dx + dy * dy;
+        if (d2 < R * R) { const d = Math.sqrt(d2) || 1, f = (1 - d / R) * 2.6; p.vx += dx / d * f; p.vy += dy / d * f; }
+      }
+      p.vx += (tx - p.x) * 0.045; p.vy += (ty - p.y) * 0.045; p.vx *= 0.84; p.vy *= 0.84;
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      const fade = (p.hem ? Math.max(0, 1 - p.drift / 140) : 1) * Math.max(0, 1 - sp * (0.8 + p.z));
+      if (fade <= 0.01) continue;
+      ctx.globalAlpha = p.a * fade * (0.82 + Math.sin(t * 2 + p.ph) * 0.18);
+      const sz = 7.5 * p.r * s * 1.4;
+      ctx.drawImage(p.spr, ox + p.x * s - sz / 2, oy + p.y * s - sz / 2, sz, sz);
+    }
+    // the red eye leans toward the light
+    const ex = ox + eye.x * s, ey = oy + eye.y * s;
+    const tdx = mouse.on ? Math.max(-4, Math.min(4, (mouse.x - ex) * 0.012)) : 0, tdy = mouse.on ? Math.max(-3, Math.min(3, (mouse.y - ey) * 0.012)) : 0;
+    eye.dx += (tdx - eye.dx) * 0.08; eye.dy += (tdy - eye.dy) * 0.08;
+    const near = mouse.on ? Math.max(0, 1 - Math.hypot(mouse.x - ex, mouse.y - ey) / 260) : 0;
+    ctx.globalAlpha = Math.min(1, (0.6 + Math.sin(t * 1.7) * 0.22 + near * 0.5 + (Math.random() < 0.01 ? 0.4 : 0)) * Math.max(0, 1 - sp * 1.3));
+    const es = (30 + near * 18) * s * 1.6; ctx.drawImage(RED, ex + eye.dx * s * 3 - es / 2, ey + eye.dy * s * 3 - es / 2, es, es);
+    // embers off the burning edge of the seal
+    if (!reduce && sp < 0.9) for (let i = 0; i < 2; i++) if (Math.random() < 0.6 * dt) emberSpawn();
+    for (let i = embers.length - 1; i >= 0; i--) {
+      const e = embers[i]; e.life += dt; if (e.life > e.max) { embers.splice(i, 1); continue; }
+      e.vx += Math.sin(t * 2 + e.ph) * 0.006; e.x += e.vx * dt; e.y += e.vy * dt;
+      ctx.globalAlpha = (1 - e.life / e.max) * (0.6 + Math.random() * 0.4);
+      const sz = 9 * e.r; ctx.drawImage(e.spr, e.x - sz / 2, e.y - sz / 2, sz, sz);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    // the talisman tilts toward the light and lifts away on scroll
+    const rx = mouse.on ? -mouse.ny * 10 : 0, ry = mouse.on ? mouse.nx * 14 : 0;
+    ofudaInner.style.transform = `translate3d(${par.x * 1.4}px, ${par.y * 1.4 - sp * 140}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) rotate(${Math.sin(t * 0.9) * 1.4}deg)`;
+    ofudaInner.style.opacity = String(Math.max(0, 1 - sp * 1.4));
+    if (!reduce && visible) requestAnimationFrame(frame); else running = false;
+  }
+
+  let visible = true, running = false;
+  const go = () => { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !reduce) go(); }).observe(hero);
+  addEventListener("scroll", () => { scrollP = Math.max(0, Math.min(1, scrollY / (hero.offsetHeight * 0.85))); }, { passive: true });
+  hero.addEventListener("pointermove", (e) => { const r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.nx = mouse.x / r.width - 0.5; mouse.ny = mouse.y / r.height - 0.5; mouse.on = true; });
+  hero.addEventListener("pointerleave", () => { mouse.on = false; });
+  let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { layout(); if (reduce) frame(performance.now()); }, 120); });
+
+  // ---- spirit-light cursor ----
+  if (fine && !reduce) {
+    const wisp = document.getElementById("wisp"), tails = [];
+    for (let i = 0; i < 9; i++) { const d = document.createElement("div"); d.className = "wisp-tail"; const sz = 7 - i * 0.6; d.style.width = d.style.height = sz + "px"; d.style.marginLeft = d.style.marginTop = -sz / 2 + "px"; d.style.filter = "blur(" + (1 + i * 0.3) + "px)"; document.body.appendChild(d); tails.push({ el: d, x: 0, y: 0 }); }
+    let cx = -100, cy = -100, wx = -100, wy = -100, shown = false;
+    addEventListener("pointermove", (e) => { cx = e.clientX; cy = e.clientY; if (!shown) { shown = true; wisp.classList.add("on"); tails.forEach((t) => t.el.classList.add("on")); } }, { passive: true });
+    document.addEventListener("pointerleave", () => { shown = false; wisp.classList.remove("on"); tails.forEach((t) => t.el.classList.remove("on")); });
+    document.querySelectorAll("a, button, .cell, .strip").forEach((el) => { el.addEventListener("pointerenter", () => wisp.classList.add("hot")); el.addEventListener("pointerleave", () => wisp.classList.remove("hot")); });
+    (function loop() {
+      wx += (cx - wx) * 0.35; wy += (cy - wy) * 0.35; wisp.style.transform = `translate3d(${wx}px, ${wy}px, 0)` + (wisp.classList.contains("hot") ? " scale(2.2)" : "");
+      let px = wx, py = wy;
+      tails.forEach((t, i) => { t.x += (px - t.x) * (0.42 - i * 0.03); t.y += (py - t.y) * (0.42 - i * 0.03); t.el.style.transform = `translate3d(${t.x}px, ${t.y}px, 0)`; t.el.style.opacity = shown ? String(0.55 - i * 0.05) : "0"; px = t.x; py = t.y; });
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  // ---- the paper strips lean toward the light ----
+  if (fine && !reduce) document.querySelectorAll(".strip").forEach((el) => {
+    el.addEventListener("pointermove", (e) => { const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; el.style.transform = `translateY(-6px) rotateX(${-y * 8}deg) rotateY(${x * 10}deg)`; });
+    el.addEventListener("pointerleave", () => { el.style.transform = ""; });
+  });
+
+  // ---- the dispute game ----
+  const N = 64, trace = document.getElementById("trace"), cells = [];
+  for (let i = 0; i < N; i++) { const c = document.createElement("div"); c.className = "cell"; trace.appendChild(c); cells.push(c); }
+  const gRound = document.getElementById("gRound"), gRange = document.getElementById("gRange"), gLeft = document.getElementById("gLeft"), gOn = document.getElementById("gOn"), gLog = document.getElementById("gLog");
+  const hex = (n) => Array.from({ length: n }, () => "0123456789abcdef"[(Math.random() * 16) | 0]).join("");
+  const OPS = ["MUL", "ADD", "SHR", "MULADD", "CLAMP", "LUT"];
+  let gameTimer = null, gameRun = 0;
+  function log(html) { gLog.insertAdjacentHTML("beforeend", "<br>" + html); gLog.scrollTop = gLog.scrollHeight; }
+  function resetGame() {
+    clearTimeout(gameTimer); gameRun++;
+    cells.forEach((c) => c.className = "cell");
+    gRound.textContent = "0 / 6"; gRange.textContent = "0 to 63"; gLeft.textContent = "64"; gOn.textContent = "0 steps";
+    gLog.innerHTML = `<span class="st">ready</span> · trace committed · root 0x${hex(4)}…${hex(4)} · press Run a dispute`;
+  }
+  function runGame() {
+    resetGame(); const run = gameRun;
+    const bad = 4 + ((Math.random() * (N - 8)) | 0);
+    let lo = 0, hi = N - 1, round = 0;
+    const wait = reduce ? 60 : 900;
+    log(`<span class="st">executor</span> posts answer · bond 50 USDG`);
+    log(`<span class="hit">challenger</span> disputes · bond 50 USDG · range 0 to 63`);
+    cells.forEach((c) => c.classList.add("range"));
+    const stepRound = () => {
+      if (run !== gameRun) return;
+      if (lo === hi) {
+        cells.forEach((c, i) => c.className = "cell" + (i === lo ? " bad" : " agree"));
+        gOn.textContent = "1 step"; gLeft.textContent = "1"; gRange.textContent = `${lo}`;
+        const op = OPS[(Math.random() * OPS.length) | 0];
+        log(`<span class="st">onchain</span> re-executes step ${lo} · ${op} 0x${hex(6)} → 0x${hex(6)}`);
+        log(`<span class="hit">verdict</span> executor's state at step ${lo} is wrong · executor bond slashed · answer rejected`);
+        return;
+      }
+      round++;
+      const mid = (lo + hi) >> 1;
+      cells.forEach((c, i) => { c.classList.toggle("mid", i === mid); });
+      gRound.textContent = `${round} / 6`;
+      gameTimer = setTimeout(() => {
+        if (run !== gameRun) return;
+        const agree = mid < bad;
+        if (agree) { log(`round ${round} · state at step ${mid} · <span class="ok">both agree</span> · error is after ${mid}`); lo = mid + 1; }
+        else { log(`round ${round} · state at step ${mid} · <span class="hit">they differ</span> · error is at or before ${mid}`); hi = mid; }
+        cells.forEach((c, i) => { c.classList.remove("mid"); const inR = i >= lo && i <= hi; c.classList.toggle("range", inR); c.classList.toggle("agree", !inR); });
+        gRange.textContent = `${lo} to ${hi}`; gLeft.textContent = String(hi - lo + 1);
+        gameTimer = setTimeout(stepRound, wait * 0.5);
+      }, wait);
+    };
+    gameTimer = setTimeout(stepRound, wait * 0.6);
+  }
+  document.getElementById("gameRun").onclick = runGame;
+  document.getElementById("gameReset").onclick = resetGame;
+  resetGame();
+  // run once on its own the first time it comes into view
+  if ("IntersectionObserver" in window && !reduce) { const go1 = new IntersectionObserver(([e]) => { if (e.isIntersecting) { go1.disconnect(); runGame(); } }, { threshold: 0.5 }); go1.observe(document.getElementById("game")); }
+
+  // ---- ambient sound: synthesized, starts only when asked ----
+  const btnSound = document.getElementById("sound");
+  let ac = null, master = null, bellT = null;
+  function startSound() {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    ac = new AC(); master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 700; lp.connect(master);
+    [[55, .22, "sine"], [82.4, .12, "sine"], [110.0, .05, "triangle"], [164.8, .025, "sine"]].forEach(([f, v, type], i) => {
+      const o = ac.createOscillator(), g = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain();
+      o.type = type; o.frequency.value = f; g.gain.value = v; l.frequency.value = 0.05 + i * 0.03; lg.gain.value = 0.8 + i * 0.4;
+      l.connect(lg); lg.connect(o.frequency); o.connect(g); g.connect(lp); o.start(); l.start();
+    });
+    // wind: filtered noise with a slow sweep
+    const buf = ac.createBuffer(1, ac.sampleRate * 3, ac.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const n = ac.createBufferSource(); n.buffer = buf; n.loop = true;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 420; bp.Q.value = 0.7;
+    const ng = ac.createGain(); ng.gain.value = 0.05; const sw = ac.createOscillator(), swg = ac.createGain(); sw.frequency.value = 0.04; swg.gain.value = 260; sw.connect(swg); swg.connect(bp.frequency);
+    n.connect(bp); bp.connect(ng); ng.connect(master); n.start(); sw.start();
+    const bell = () => {
+      if (!ac) return; const now = ac.currentTime;
+      [[1318.5, .05], [2637, .02], [3951, .008]].forEach(([f, v]) => { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f * (0.995 + Math.random() * 0.01); g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(v, now + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, now + 4.5); o.connect(g); g.connect(master); o.start(now); o.stop(now + 4.6); });
+      bellT = setTimeout(bell, 9000 + Math.random() * 9000);
+    };
+    bellT = setTimeout(bell, 1800);
+    return true;
+  }
+  btnSound.onclick = async () => {
+    const on = btnSound.getAttribute("aria-pressed") !== "true";
+    if (on && !ac && !startSound()) return;
+    if (ac && ac.state === "suspended") await ac.resume();
+    const now = ac.currentTime; master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value, now); master.gain.linearRampToValueAtTime(on ? 0.5 : 0, now + (on ? 2.5 : 0.8));
+    btnSound.setAttribute("aria-pressed", on ? "true" : "false");
+  };
+
+  // ---- the opening ritual, once per visit ----
+  const ritual = document.getElementById("ritual"), paper = document.getElementById("ritualPaper"), edge = document.getElementById("ritualEdge");
+  let started = false;
+  const start = () => {
+    if (started) return; started = true;
+    build(innerWidth < 900 ? 6.4 : 5.2); layout();
+    document.body.classList.add("go");
+    reduce ? frame(performance.now()) : go();
+  };
+  const endRitual = (assemble) => {
+    document.body.classList.remove("ritual"); ritual.classList.add("gone");
+    setTimeout(() => { ritual.hidden = true; }, 1100);
+    store.set("yurei.ritual", "1");
+    start(); if (assemble) gather();
+    ofuda.classList.add("on");
+  };
+  const ready = (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve());
+  if (!reduce && !store.get("yurei.ritual")) {
+    ritual.hidden = false; document.body.classList.add("ritual");
+    let done = false; const finish = (assemble) => { if (done) return; done = true; endRitual(assemble); };
+    document.getElementById("ritualSkip").onclick = () => finish(true);
+    addEventListener("keydown", (e) => { if (e.key === "Escape") finish(true); }, { once: true });
+    ready.then(() => {
+      setTimeout(() => { paper.classList.add("burn"); edge.classList.add("go"); }, 2700);
+      setTimeout(() => finish(true), 3900);
+    });
+  } else {
+    ready.then(() => { start(); ofuda.classList.add("on"); });
+  }
+})();
+</script>
+
+</body>
+</html>
